@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,10 +22,10 @@ public class Category {
     private Long id;
 
     @Column(name = "name", nullable = false, length = 100)
-    private int name;
+    private String name;
 
     @Column(name = "slug", nullable = false, unique = true, length = 150)
-    private String slut;
+    private String slug;
 
     @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
     private Set<Product> products = new HashSet<>();
