@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 public record ProductResponseDTO(
+        String id,
         String sku,
         String name,
         String description,
