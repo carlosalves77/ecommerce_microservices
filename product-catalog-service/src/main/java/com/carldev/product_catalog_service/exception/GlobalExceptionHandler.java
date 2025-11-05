@@ -22,4 +22,32 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(erros);
     }
+
+    @ExceptionHandler(SkuAlreadyExistsException.class)
+    public ResponseEntity<Map<String, String>> handleIfSkuAlreadyExists(SkuAlreadyExistsException ex) {
+
+        Map<String, String> erros = new HashMap<>();
+        erros.put("message: ", ex.getMessage());
+
+        return ResponseEntity.badRequest().body(erros);
+    }
+
+    @ExceptionHandler(ProductIdNotExistsException.class)
+    public ResponseEntity<Map<String, String>> handleIfIdNotExists(ProductIdNotExistsException ex) {
+
+        Map<String, String> erros = new HashMap<>();
+        erros.put("message: ", ex.getMessage());
+
+        return ResponseEntity.badRequest().body(erros);
+    }
+
+    @ExceptionHandler(InvalidUpdateRequestException.class)
+    public ResponseEntity<Map<String, String>> handleIfInvalidUpdateExists(InvalidUpdateRequestException ex) {
+
+        Map<String, String> erros = new HashMap<>();
+        erros.put("message: ", ex.getMessage());
+
+        return ResponseEntity.badRequest().body(erros);
+    }
+
 }
