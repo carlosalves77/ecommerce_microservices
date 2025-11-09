@@ -1,4 +1,4 @@
-package com.carldev.product_catalog_service.dto.ProductDTO.response;
+package com.carldev.product_catalog_service.dto.CategoryDTO.response;
 
 public record CategoryResponseDTO(
         Long id,

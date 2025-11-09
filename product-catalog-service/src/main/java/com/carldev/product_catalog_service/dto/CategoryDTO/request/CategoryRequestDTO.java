@@ -1,4 +1,4 @@
-package com.carldev.product_catalog_service.dto.ProductDTO.request;
+package com.carldev.product_catalog_service.dto.CategoryDTO.request;
 
 import jakarta.validation.constraints.NotBlank;
 
