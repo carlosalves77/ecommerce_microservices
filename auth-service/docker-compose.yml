@@ -1,0 +1,47 @@
+services:
+  postgres_auth:
+    image: postgres:16
+    container_name: postgres_auth_database
+    environment:
+      - POSTGRES_USER=${postgres_user}
+      - POSTGRES_PASSWORD=${postgres_password}
+      - POSTGRES_DB=${postgres_database}
+    ports:
+      - "5001:5432"
+    networks:
+      - internal
+    volumes:
+      - auth_data:/var/lib/postgresql/data
+
+  auth-service:
+    build:
+      context: .
+      target: runner
+    image: auth-service:latest
+    container_name: auth-service
+    depends_on:
+      - postgres_auth
+    env_file:
+      - .env
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_auth:5432/${postgres_database}
+      - SPRING_DATASOURCE_USERNAME=${spring_user}
+      - SPRING_DATASOURCE_PASSWORD=${spring_password}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SERVER_PORT=4005
+      - SPRING_JPA_OPEN_IN_VIEW=false
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - JWT_SECRET=${JWT_SECRET}
+
+    ports:
+      - "4005:4005"
+    networks:
+      - internal
+
+
+volumes:
+  auth_data:
+
+networks:
+  internal:
+    external: true
