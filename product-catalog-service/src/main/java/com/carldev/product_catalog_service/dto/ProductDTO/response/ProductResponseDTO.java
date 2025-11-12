@@ -1,6 +1,6 @@
 package com.carldev.product_catalog_service.dto.ProductDTO.response;
 
-import com.carldev.product_catalog_service.entity.Category;
+import com.carldev.product_catalog_service.dto.CategoryDTO.response.CategoryResponseDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
