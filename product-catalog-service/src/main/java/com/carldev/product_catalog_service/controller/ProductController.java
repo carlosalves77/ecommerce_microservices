@@ -3,7 +3,6 @@ package com.carldev.product_catalog_service.controller;
 import com.carldev.product_catalog_service.dto.ProductDTO.request.ProductRequestDTO;
 import com.carldev.product_catalog_service.dto.ProductDTO.request.UpdateProductRequestDTO;
 import com.carldev.product_catalog_service.dto.ProductDTO.response.ProductResponseDTO;
-import com.carldev.product_catalog_service.entity.Product;
 import com.carldev.product_catalog_service.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -28,6 +27,15 @@ public class ProductController {
         return ResponseEntity.ok().body(allProducts);
     }
 
+    @GetMapping("/{sku}")
+    public ResponseEntity<ProductResponseDTO> getProductBySkuCriteria(
+            @PathVariable String sku
+    ) {
+       ProductResponseDTO productResponseSku = productService.findProductSkuByCriteria(sku);
+
+        return ResponseEntity.ok().body(productResponseSku);
+    }
+
     @PostMapping
     public ResponseEntity<ProductResponseDTO> createProduct(
             @Valid @RequestBody ProductRequestDTO productRequestDTO
@@ -40,7 +48,9 @@ public class ProductController {
 
     @PutMapping
     public ResponseEntity<ProductResponseDTO> updateProduct(
-            @RequestParam("id") Long id, @RequestBody UpdateProductRequestDTO requestDTO
+            @RequestParam("id") Long id,
+            @Valid
+            @RequestBody UpdateProductRequestDTO requestDTO
             ) {
 
         ProductResponseDTO productResponseDTO = productService.updateProduct(requestDTO, id);

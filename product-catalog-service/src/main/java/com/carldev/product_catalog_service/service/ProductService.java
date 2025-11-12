@@ -26,12 +26,14 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
 
+
     public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,
                           ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productMapper = productMapper;
     }
+
 
     @Transactional
     public List<ProductResponseDTO> getAllProducts() {
@@ -85,6 +87,15 @@ public class ProductService {
         Product updateProduct = productRepository.save(product);
 
         return productMapper.toDto(updateProduct);
+    }
+
+    @Transactional
+    public ProductResponseDTO findProductSkuByCriteria(String sku) {
+
+        Product product = productRepository.findBySku(sku).orElseThrow(
+                () -> new SkuAlreadyExistsException("Sku não existe"));
+
+        return productMapper.toDto(product);
     }
 
     public void deleteProduct(Long id) {
