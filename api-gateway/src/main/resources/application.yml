@@ -1,0 +1,40 @@
+server:
+  port: 4000
+
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: auth-service-route
+              uri: http://auth-service:4005
+              predicates:
+                - Path=/api/auth/**
+              filters:
+                - JwtValidation
+
+
+            - id: product-route
+              uri: http://product-catalog-service:4004
+              predicates:
+                - Path=/api/product/**
+              filters:
+                - JwtValidation
+
+            - id: categories-route
+              uri: http://product-catalog-service:4004
+              predicates:
+                - Path=/api/categories/**
+              filters:
+                - JwtValidation
+
+            - id: shopping-cart-service-route
+              uri: http://shopping-cart-service:4006
+              predicates:
+                - Path=/api/cart/**
+              filters:
+                - JwtValidation
+
+
+
