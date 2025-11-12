@@ -54,4 +54,14 @@ public class AuthUserController {
                 ResponseEntity.ok().body("Token Valid") :
                 ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token Invalid");
     }
+
+    @GetMapping("/verify-account")
+    public ResponseEntity<String> verifyAccount(@RequestParam("token") String token) {
+         try {
+             authService.verifyAccount(token);
+             return ResponseEntity.ok("Conta verificada com sucesso! Pode efetuar o login");
+         } catch (RuntimeException e) {
+             return ResponseEntity.badRequest().body(e.getMessage());
+         }
+    }
 }

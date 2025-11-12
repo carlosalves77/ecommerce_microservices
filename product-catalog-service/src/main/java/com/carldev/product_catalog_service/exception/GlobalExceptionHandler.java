@@ -50,4 +50,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(erros);
     }
 
+    @ExceptionHandler(SlugAlreadyExistsException.class)
+    public ResponseEntity<Map<String, String>> handleIfSlugAlreadyExists(SlugAlreadyExistsException ex) {
+        Map<String, String> erros = new HashMap<>();
+        erros.put("message", ex.getMessage());
+
+        return ResponseEntity.badRequest().body(erros);
+    }
+
 }
