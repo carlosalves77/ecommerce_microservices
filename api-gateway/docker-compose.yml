@@ -1,0 +1,15 @@
+services:
+  api-gateway:
+    image: api-gateway:latest
+    build: .
+    container_name: api-gateway
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:4005
+    ports:
+      - "4000:4000"
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true
