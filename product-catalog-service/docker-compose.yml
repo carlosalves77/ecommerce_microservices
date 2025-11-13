@@ -6,6 +6,7 @@ services:
       - POSTGRES_USER=${postgres_user}
       - POSTGRES_PASSWORD=${postgres_password}
       - POSTGRES_DB=${postgres_database}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     ports:
       - "5002:5432"
     networks:
