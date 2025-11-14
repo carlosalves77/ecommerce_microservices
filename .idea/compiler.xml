@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
         <module name="shopping-cart-service" />
+        <module name="payment-service" />
       </profile>
       <profile name="Annotation profile for product-catalog-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -27,6 +28,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
       <module name="auth-service" options="-parameters" />
+      <module name="payment-service" options="-parameters" />
       <module name="product-catalog-service" options="-parameters" />
       <module name="shopping-cart-service" options="-parameters" />
     </option>
