@@ -55,10 +55,6 @@ graph TD
 
 • Utilitários: Lombok, MapStruct, Bean Validation, JPA.
 
-### 🧩 Serviços do Ecossistema
-
-
-
 
 
 ### 🛠️ Instalação e Execução
