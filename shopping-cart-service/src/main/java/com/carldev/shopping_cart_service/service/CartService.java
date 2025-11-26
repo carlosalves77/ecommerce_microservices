@@ -1,17 +1,18 @@
 package com.carldev.shopping_cart_service.service;
 
-import com.carldev.shopping_cart_service.dto.OrderItemDTO;
-import com.carldev.shopping_cart_service.dto.request.OrderPlacementRequestDTO;
 import com.carldev.shopping_cart_service.dto.response.ProductResponseDTO;
+import com.carldev.shopping_cart_service.exception.HandleIfCartNotFoundException;
+import com.carldev.shopping_cart_service.exception.HandleQuantityNotValidException;
+import com.carldev.shopping_cart_service.exception.HandleSkuNotExistsException;
 import com.carldev.shopping_cart_service.feignClient.ProductCatalogClient;
 import com.carldev.shopping_cart_service.redis.Cart;
 import com.carldev.shopping_cart_service.redis.CartItem;
 import com.carldev.shopping_cart_service.repository.CartRepository;
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +36,14 @@ public class CartService {
 
     public void AddItemToCart(Authentication authentication, String sku, int quantity) {
 
-        ProductResponseDTO productResponseDTO = productCatalogClient.getProductBySku(sku);
+
+        ProductResponseDTO productResponseDTO;
+
+        try {
+            productResponseDTO = productCatalogClient.getProductBySku(sku);
+        } catch (FeignException e) {
+          throw new  HandleSkuNotExistsException("Sku não existente");
+        }
 
         if (productResponseDTO.stockQuantity() < quantity) {
             throw new RuntimeException("Estoque insuficiente!");
@@ -44,7 +52,6 @@ public class CartService {
         Jwt jwt = (Jwt) authentication.getPrincipal();
 
         UUID userId = UUID.fromString(jwt.getClaimAsString("userId"));
-
 
         Cart cart = cartRepository.findById(userId).orElse(new Cart());
         cart.setUserId(userId);
@@ -78,7 +85,18 @@ public class CartService {
 
     public void UpdateQuantityCart(Authentication authentication, String sku, Integer newQuantity) {
 
-        ProductResponseDTO productResponseDTO = productCatalogClient.getProductBySku(sku);
+        ProductResponseDTO productResponseDTO;
+
+        try {
+          productResponseDTO = productCatalogClient.getProductBySku(sku);
+        } catch (FeignException e) {
+          throw new  HandleIfCartNotFoundException("Carrinho não encontrado");
+        }
+
+        if (newQuantity <= 0) {
+            throw new  HandleQuantityNotValidException("Não é permitido o valor");
+        }
+
         if (productResponseDTO.stockQuantity() < newQuantity) {
             throw new RuntimeException("Estoque insuficiente para a quantidade desejada!");
         }
@@ -88,18 +106,14 @@ public class CartService {
         UUID userId = UUID.fromString(jwt.getClaimAsString("userId"));
 
         Cart cart = cartRepository.findById(userId).orElseThrow(
-                () -> new RuntimeException("Carrinho não encontrado")
+                () -> new HandleIfCartNotFoundException("Carrinho não encontrado")
         );
 
         CartItem cartItem = cart.getItems().stream()
                 .filter(item -> item.getSku().equals(sku)).findFirst()
-                        .orElseThrow(() -> new RuntimeException("Item não encontrado no carrinho"));
+                .orElseThrow(() -> new RuntimeException("Item não encontrado no carrinho"));
 
-        if(newQuantity > 0) {
-            cartItem.setQuantity(newQuantity);
-        } else {
-            cart.getItems().remove(cartItem);
-        }
+        cartItem.setQuantity(newQuantity);
 
         cart.recalculateTotal();
 
@@ -131,4 +145,5 @@ public class CartService {
         }
 
     }
+
 }
