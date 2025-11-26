@@ -34,6 +34,8 @@ public class CheckOutService {
         Jwt jwt = (Jwt) authentication.getPrincipal();
 
         UUID userId = UUID.fromString(jwt.getClaimAsString("userId"));
+        String email = jwt.getSubject();
+        String userName = jwt.getClaimAsString("userName");
 
         Cart cart = cartRepository.findById(userId).orElseThrow(
                 () -> new RuntimeException("Carrinho não encontrado")
@@ -43,7 +45,7 @@ public class CheckOutService {
             throw new RuntimeException("O carrinho está vazio");
         }
 
-        OrderPlacementRequestDTO requestDTO = mapToOrder(cart, userId);
+        OrderPlacementRequestDTO requestDTO = mapToOrder(cart, userId, email, userName);
 
         CheckOutCreatedEvent event = CheckOutCreatedEvent.fromEntity(requestDTO);
 
@@ -57,7 +59,7 @@ public class CheckOutService {
     }
 
 
-    private OrderPlacementRequestDTO mapToOrder(Cart cart, UUID uuid) {
+    private OrderPlacementRequestDTO mapToOrder(Cart cart, UUID uuid, String email, String userName) {
 
         List<OrderItemDTO> orderItemDTOList = cart.getItems().stream()
                 .map(items -> new OrderItemDTO(
@@ -68,6 +70,8 @@ public class CheckOutService {
 
         return new OrderPlacementRequestDTO(
                 uuid,
+                email,
+                userName,
                 cart.getTotal(),
                 orderItemDTOList
         );
