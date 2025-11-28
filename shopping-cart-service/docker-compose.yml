@@ -65,7 +65,7 @@ services:
     depends_on:
       - kafka
     environment:
-      KAFKA_CLUSTERS_0_NAME: shopping-cart-service-cluster
+      KAFKA_CLUSTERS_0_NAME: e-commerce-service-cluster
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:19092
       KAFKA_CLUSTERS_0_ZOOKEEPER: ""
 
