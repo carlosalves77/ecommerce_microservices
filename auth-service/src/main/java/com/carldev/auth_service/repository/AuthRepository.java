@@ -12,4 +12,6 @@ public interface AuthRepository extends JpaRepository<UserAuth, UUID> {
     Optional<UserDetails> findUserByEmail(String username);
 
     boolean existsByEmail(String email);
+
+    Optional<UserAuth> findByEmailIgnoreCase(String email);
 }
