@@ -1,4 +1,4 @@
-package com.carldev.auth_service.dto.authDTO.response;
+package com.carldev.auth_service.dto.response;
 
 public record AuthLoginResponseDTO(
         String username,
