@@ -1,4 +1,4 @@
-package com.carldev.auth_service.dto.authDTO.request;
+package com.carldev.auth_service.dto.request;
 
 import com.carldev.auth_service.util.RoleType;
 import jakarta.persistence.Column;
