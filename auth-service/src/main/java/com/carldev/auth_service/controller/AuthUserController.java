@@ -6,7 +6,7 @@ import com.carldev.auth_service.dto.request.ForgotPassword;
 import com.carldev.auth_service.dto.request.ResetPasswordDTO;
 import com.carldev.auth_service.dto.response.AuthLoginResponseDTO;
 import com.carldev.auth_service.dto.response.AuthRegisterResponseDTO;
-import com.carldev.auth_service.service.JwtTokenVerifier;
+import com.carldev.auth_service.config.JwtTokenVerifier;
 import com.carldev.auth_service.service.UserAuthService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
