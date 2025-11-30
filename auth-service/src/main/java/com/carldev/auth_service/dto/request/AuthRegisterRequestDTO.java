@@ -16,7 +16,7 @@ public record AuthRegisterRequestDTO(
         @NotBlank(message = "Informe a senha")
         String password,
 
-        @NotBlank()
+        @NotBlank(message = "Informe nome do usuário")
         String username,
 
         @NotNull(message = "Informe o tipo de usuário")
