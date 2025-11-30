@@ -36,7 +36,6 @@ services:
     networks:
       - internal
     environment:
-
       - KAFKA_PROCESS_ROLES=broker,controller
       - KAFKA_NODE_ID=1
       - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
@@ -70,8 +69,8 @@ services:
       KAFKA_CLUSTERS_0_ZOOKEEPER: ""
 
 volumes:
-  kafka_data:
   redis_data: {}
+  kafka_data:
 
 networks:
   internal:
