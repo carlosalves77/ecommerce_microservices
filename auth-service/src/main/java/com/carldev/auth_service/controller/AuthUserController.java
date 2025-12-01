@@ -1,10 +1,12 @@
 package com.carldev.auth_service.controller;
 
-import com.carldev.auth_service.dto.authDTO.request.AuthLoginRequestDTO;
-import com.carldev.auth_service.dto.authDTO.request.AuthRegisterRequestDTO;
-import com.carldev.auth_service.dto.authDTO.response.AuthLoginResponseDTO;
-import com.carldev.auth_service.dto.authDTO.response.AuthRegisterResponseDTO;
-import com.carldev.auth_service.service.JwtTokenVerifier;
+import com.carldev.auth_service.dto.request.AuthLoginRequestDTO;
+import com.carldev.auth_service.dto.request.AuthRegisterRequestDTO;
+import com.carldev.auth_service.dto.request.ForgotPassword;
+import com.carldev.auth_service.dto.request.ResetPasswordDTO;
+import com.carldev.auth_service.dto.response.AuthLoginResponseDTO;
+import com.carldev.auth_service.dto.response.AuthRegisterResponseDTO;
+import com.carldev.auth_service.config.JwtTokenVerifier;
 import com.carldev.auth_service.service.UserAuthService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -63,5 +65,21 @@ public class AuthUserController {
          } catch (RuntimeException e) {
              return ResponseEntity.badRequest().body(e.getMessage());
          }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> forgotPassword(
+            @RequestBody ForgotPassword dto
+    ) {
+        authService.forgotPassword(dto);
+
+        return ResponseEntity.ok("Se o email estiver registrado, será enviado um link");
+    }
+
+    @PostMapping("/reset-password/confirm")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDTO dto) {
+        authService.resetPassword(dto);
+
+        return ResponseEntity.ok().body("Senha atualizada");
     }
 }

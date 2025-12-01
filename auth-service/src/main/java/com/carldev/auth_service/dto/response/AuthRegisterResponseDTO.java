@@ -1,4 +1,4 @@
-package com.carldev.auth_service.dto.authDTO.response;
+package com.carldev.auth_service.dto.response;
 
 import com.carldev.auth_service.util.RoleType;
 

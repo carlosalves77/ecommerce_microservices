@@ -1,4 +1,4 @@
-package com.carldev.auth_service.dto.authDTO.request;
+package com.carldev.auth_service.dto.request;
 
 import com.carldev.auth_service.util.RoleType;
 import jakarta.persistence.Column;
@@ -16,7 +16,7 @@ public record AuthRegisterRequestDTO(
         @NotBlank(message = "Informe a senha")
         String password,
 
-        @NotBlank()
+        @NotBlank(message = "Informe nome do usuário")
         String username,
 
         @NotNull(message = "Informe o tipo de usuário")
