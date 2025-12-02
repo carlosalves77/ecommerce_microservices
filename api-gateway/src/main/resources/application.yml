@@ -36,5 +36,11 @@ spring:
               filters:
                 - JwtValidation
 
+            - id: payment-service-route
+              uri: http://payment-service:4007
+              predicates:
+                - Path=/api/payment/**
+              filters:
+                - JwtValidation
 
 
