@@ -1,18 +1,19 @@
 package com.carldev.auth_service.controller;
 
-import com.carldev.auth_service.dto.request.AuthLoginRequestDTO;
-import com.carldev.auth_service.dto.request.AuthRegisterRequestDTO;
-import com.carldev.auth_service.dto.request.ForgotPassword;
-import com.carldev.auth_service.dto.request.ResetPasswordDTO;
+import com.carldev.auth_service.dto.request.*;
 import com.carldev.auth_service.dto.response.AuthLoginResponseDTO;
 import com.carldev.auth_service.dto.response.AuthRegisterResponseDTO;
 import com.carldev.auth_service.config.JwtTokenVerifier;
+import com.carldev.auth_service.dto.response.AuthResponseDTO;
 import com.carldev.auth_service.service.UserAuthService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -81,5 +82,22 @@ public class AuthUserController {
         authService.resetPassword(dto);
 
         return ResponseEntity.ok().body("Senha atualizada");
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/user")
+    public ResponseEntity<List<AuthResponseDTO>> getUserByName(
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "isVerified", defaultValue = "true") Boolean isVerified
+            ) {
+
+        AuthRequestDTO AuthRequest = new AuthRequestDTO(
+                name,
+                isVerified
+        );
+
+        List<AuthResponseDTO> responseDTO = authService.getUserByName(AuthRequest);
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 }
