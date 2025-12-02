@@ -47,10 +47,10 @@ public class CartService {
         }
 
         if (productResponseDTO.stockQuantity() < requestDTO.quantity()) {
-            throw new RuntimeException("Estoque insuficiente!");
+            throw new HandleQuantityNotValidException("Estoque insuficiente!");
         }
 
-        AddItemRequestDTO productDebitRequestDTO = productCatalogClient.getProductDebit(requestDTO);
+         productCatalogClient.getProductDebit(requestDTO);
 
 
         Jwt jwt = (Jwt) authentication.getPrincipal();
