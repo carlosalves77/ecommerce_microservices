@@ -1,4 +1,4 @@
-package com.carldev.auth_service.service;
+package com.carldev.auth_service.config;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -27,8 +27,7 @@ public class JwtTokenVerifier {
             this.jwtVerifier = JWT.require(algorithm).build();
 
         } catch (IllegalArgumentException e) {
-            log.error("Error ao inicilizar o JWTVerifier {}", e.getMessage());
-            throw new RuntimeException("Segredo JWT inválido");
+            throw new RuntimeException("JWT inválido");
         }
     }
 
@@ -46,7 +45,7 @@ public class JwtTokenVerifier {
             log.warn("Validação do JWT falhou: {}", e.getMessage());
             return false;
         } catch (Exception e) {
-            log.error("Error insesperado a validação do token", e);
+            log.error("Error na validação do token", e);
             return false;
         }
     }
