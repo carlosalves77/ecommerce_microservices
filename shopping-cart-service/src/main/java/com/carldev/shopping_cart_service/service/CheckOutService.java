@@ -2,6 +2,8 @@ package com.carldev.shopping_cart_service.service;
 
 import com.carldev.shopping_cart_service.dto.OrderItemDTO;
 import com.carldev.shopping_cart_service.dto.request.OrderPlacementRequestDTO;
+import com.carldev.shopping_cart_service.exception.HandleIfCartIsEmptyException;
+import com.carldev.shopping_cart_service.exception.HandleIfCartNotFoundException;
 import com.carldev.shopping_cart_service.kafka.CheckOutCreatedEvent;
 import com.carldev.shopping_cart_service.redis.Cart;
 import com.carldev.shopping_cart_service.repository.CartRepository;
@@ -38,11 +40,11 @@ public class CheckOutService {
         String userName = jwt.getClaimAsString("userName");
 
         Cart cart = cartRepository.findById(userId).orElseThrow(
-                () -> new RuntimeException("Carrinho não encontrado")
+                () -> new HandleIfCartNotFoundException("Carrinho não encontrado")
         );
 
         if (cart.getItems() == null || cart.getItems().isEmpty()) {
-            throw new RuntimeException("O carrinho está vazio");
+            throw new HandleIfCartIsEmptyException("O carrinho está vazio");
         }
 
         OrderPlacementRequestDTO requestDTO = mapToOrder(cart, userId, email, userName);
