@@ -8,6 +8,8 @@ import java.util.UUID;
 
 public record OrderPlacementRequestDTO(
         UUID userId,
+        String email,
+        String userName,
         BigDecimal totalAmount,
         List<OrderItemDTO> items
         ) {
