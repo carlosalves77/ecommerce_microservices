@@ -5,12 +5,12 @@ services:
       target: runner
     image: notification-service:latest
     container_name: notification-service
+    env_file:
+      - .env
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:19092
       - SERVER_PORT=4008
       - MAILTRAP_KEY=${MAILTRAP_KEY}
-      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
-      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
     ports:
       - "4008:4008"
     networks:
