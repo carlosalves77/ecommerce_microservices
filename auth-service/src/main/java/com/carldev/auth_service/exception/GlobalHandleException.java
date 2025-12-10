@@ -29,4 +29,14 @@ public class GlobalHandleException {
         erros.put("message", ex.getMessage());
         return ResponseEntity.badRequest().body(erros);
     }
+
+    @ExceptionHandler(HandleIfInvalidTokenOrExpireException.class)
+    public ResponseEntity<Map<String, String>> HandleIfInvalidTokenOrExpireException(
+            HandleIfInvalidTokenOrExpireException ex) {
+        Map<String, String> erros = new HashMap<>();
+
+        erros.put("Message: ", ex.getMessage());
+
+        return ResponseEntity.badRequest().body(erros);
+    }
 }
