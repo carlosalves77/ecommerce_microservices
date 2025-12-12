@@ -1,8 +1,6 @@
 package com.carldev.auth_service.kafka.producer;
 
-import com.carldev.auth_service.kafka.event.CreateAccountValidationEvent;
-import com.carldev.auth_service.kafka.event.ResetPasswordEvent;
-import lombok.extern.slf4j.Slf4j;
+import com.carldev.auth_service.kafka.eventsDTO.ResetPasswordEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
