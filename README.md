@@ -28,9 +28,11 @@ graph TD
         
         AuthService -.->|Persistência| Postgres[(PostgreSQL)]
         ProductService -.->|Persistência| Postgres
+        PaymentService -.->|Persistência| Postgres
         CartService -.->|Cache Rápido| Redis[(Redis)]
         
         PaymentService -->|Publica Evento| Kafka{{Apache Kafka}}
+        AuthService -->|Publica Evento| Kafka{{Apache Kafka}}
         Kafka -.->|Consome Evento| Notification[Notification/Order Service]
     end
 
