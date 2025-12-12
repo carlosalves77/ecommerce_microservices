@@ -1,4 +1,4 @@
-package com.carldev.shopping_cart_service.dto;
+package com.carldev.payment_service.kafka.eventsDTO;
 
 import java.math.BigDecimal;
 
