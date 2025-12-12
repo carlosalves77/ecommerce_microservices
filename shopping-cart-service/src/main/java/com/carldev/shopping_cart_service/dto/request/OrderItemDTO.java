@@ -1,4 +1,4 @@
-package com.carldev.payment_service.dto.response;
+package com.carldev.shopping_cart_service.dto.request;
 
 import java.math.BigDecimal;
 

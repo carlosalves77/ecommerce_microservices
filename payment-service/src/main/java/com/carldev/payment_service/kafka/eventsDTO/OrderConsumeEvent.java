@@ -1,4 +1,4 @@
-package com.carldev.payment_service.dto.response;
+package com.carldev.payment_service.kafka.eventsDTO;
 
 import java.math.BigDecimal;
 import java.util.List;
