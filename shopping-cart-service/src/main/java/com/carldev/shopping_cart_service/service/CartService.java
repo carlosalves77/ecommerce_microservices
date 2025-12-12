@@ -1,8 +1,9 @@
 package com.carldev.shopping_cart_service.service;
 
-import com.carldev.shopping_cart_service.dto.OrderItemDTO;
+import com.carldev.shopping_cart_service.dto.request.OrderItemDTO;
 import com.carldev.shopping_cart_service.dto.request.AddItemRequestDTO;
 import com.carldev.shopping_cart_service.dto.request.OrderPlacementRequestDTO;
+import com.carldev.shopping_cart_service.dto.response.CartItemResponseDTO;
 import com.carldev.shopping_cart_service.dto.response.ProductResponseDTO;
 import com.carldev.shopping_cart_service.exception.HandleIfCartIsEmptyException;
 import com.carldev.shopping_cart_service.exception.HandleIfCartNotFoundException;
@@ -10,6 +11,7 @@ import com.carldev.shopping_cart_service.exception.HandleQuantityNotValidExcepti
 import com.carldev.shopping_cart_service.exception.HandleSkuNotExistsException;
 import com.carldev.shopping_cart_service.feignClient.ProductCatalogClient;
 import com.carldev.shopping_cart_service.kafka.CheckOutCreatedEvent;
+import com.carldev.shopping_cart_service.mapper.CartMapper;
 import com.carldev.shopping_cart_service.redis.Cart;
 import com.carldev.shopping_cart_service.redis.CartItem;
 import com.carldev.shopping_cart_service.repository.CartRepository;
@@ -33,17 +35,19 @@ public class CartService {
     private final CartRepository cartRepository;
     private final ProductCatalogClient productCatalogClient;
     private final ApplicationEventPublisher eventPublisher;
+    private final CartMapper cartMapper;
 
 
 
-    public CartService(CartRepository cartRepository, ProductCatalogClient productCatalogClient, ApplicationEventPublisher eventPublisher) {
+    public CartService(CartRepository cartRepository, ProductCatalogClient productCatalogClient, ApplicationEventPublisher eventPublisher, CartMapper cartMapper) {
         this.cartRepository = cartRepository;
         this.productCatalogClient = productCatalogClient;
         this.eventPublisher = eventPublisher;
+        this.cartMapper = cartMapper;
     }
 
 
-    public void AddItemToCart(Authentication authentication, AddItemRequestDTO requestDTO) {
+    public CartItemResponseDTO AddItemToCart(Authentication authentication, AddItemRequestDTO requestDTO) {
 
 
         ProductResponseDTO productResponseDTO;
@@ -84,6 +88,8 @@ public class CartService {
         cart.recalculateTotal();
 
         cartRepository.save(cart);
+
+        return cartMapper.toDto(cart);
     }
 
     public List<Cart> getAllCartProducts() {
@@ -94,7 +100,7 @@ public class CartService {
                 .collect(Collectors.toList());
     }
 
-    public void UpdateQuantityCart(Authentication authentication, String sku, Integer newQuantity) {
+    public CartItemResponseDTO UpdateQuantityCart(Authentication authentication, String sku, Integer newQuantity) {
 
         ProductResponseDTO productResponseDTO;
 
@@ -129,6 +135,8 @@ public class CartService {
         cart.recalculateTotal();
 
         cartRepository.save(cart);
+
+        return cartMapper.toDto(cart);
     }
 
     public void deleteAllItemCart() {
@@ -174,8 +182,6 @@ public class CartService {
             throw new HandleIfCartIsEmptyException("O carrinho está vazio");
         }
 
-
-
         OrderPlacementRequestDTO requestDTO = mapToOrder(cart, userId, email, userName);
 
         CheckOutCreatedEvent event = CheckOutCreatedEvent.fromEntity(requestDTO);
@@ -186,6 +192,7 @@ public class CartService {
         cart.getItems().clear();
         cart.recalculateTotal();
         cartRepository.save(cart);
+
 
     }
 
