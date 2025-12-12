@@ -20,15 +20,15 @@ services:
       target: runner
     image:  product-catalog-service:latest
     container_name:  product-catalog-service
-#    depends_on:
-#      - postgres_product
+    depends_on:
+      - postgres_product
     env_file:
       - .env
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_product:5432/${postgres_database}
       - SPRING_DATASOURCE_USERNAME=${spring_user}
       - SPRING_DATASOURCE_PASSWORD=${spring_password}
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=create
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SERVER_PORT=4004
       - SPRING_JPA_OPEN_IN_VIEW=false
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
