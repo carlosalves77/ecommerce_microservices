@@ -22,6 +22,7 @@ spring:
               filters:
                 - JwtValidation
 
+
             - id: categories-route
               uri: http://product-catalog-service:4004
               predicates:
