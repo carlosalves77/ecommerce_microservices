@@ -43,7 +43,7 @@ graph TD
 
 • Arquitetura: Microservices, MVC, API Gateway
 
-• Banco de Dados: * PostgreSQL: Para dados relacionais (Usuários, Produtos).
+• Banco de Dados: * PostgreSQL: Para dados relacionais (Usuários, Produtos, Pagamentos).
 
 • Redis: Para dados voláteis e de acesso rápido (Carrinho de Compras).
 
