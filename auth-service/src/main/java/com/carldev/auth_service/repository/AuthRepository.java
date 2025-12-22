@@ -1,6 +1,7 @@
 package com.carldev.auth_service.repository;
 
 import com.carldev.auth_service.model.UserAuth;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,8 +18,6 @@ public interface AuthRepository extends JpaRepository<UserAuth, UUID> {
 
     Optional<UserAuth> findByEmailIgnoreCase(String email);
 
+    List<UserAuth> findByUsernameContainingIgnoreCase(String username, Pageable pageable);
 
-    @Query(value = "SELECT * FROM user_auth p WHERE :username % ANY(STRING_TO_ARRAY(p.username, ' ')) AND p.is_verified = :isVerified",
-            nativeQuery = true)
-    Optional<List<UserAuth>> findByUserNameAndIsVerified(String username, boolean isVerified);
 }
