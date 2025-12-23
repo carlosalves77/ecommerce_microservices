@@ -1,21 +1,24 @@
 package com.carldev.auth_service.controller;
 
-import com.carldev.auth_service.config.SecurityFilter;
+import com.carldev.auth_service.config.JwtTokenVerifier;
 import com.carldev.auth_service.dto.request.*;
 import com.carldev.auth_service.dto.response.AuthLoginResponseDTO;
 import com.carldev.auth_service.dto.response.AuthRegisterResponseDTO;
-import com.carldev.auth_service.config.JwtTokenVerifier;
 import com.carldev.auth_service.dto.response.AuthResponseDTO;
+import com.carldev.auth_service.model.UserAuth;
 import com.carldev.auth_service.service.UserAuthService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -62,12 +65,12 @@ public class AuthUserController {
 
     @GetMapping("/verify-account")
     public ResponseEntity<String> verifyAccount(@RequestParam("token") String token) {
-         try {
-             authService.verifyAccount(token);
-             return ResponseEntity.ok("Conta verificada com sucesso! Pode efetuar o login");
-         } catch (RuntimeException e) {
-             return ResponseEntity.badRequest().body(e.getMessage());
-         }
+        try {
+            authService.verifyAccount(token);
+            return ResponseEntity.ok("Conta verificada com sucesso! Pode efetuar o login");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/reset-password")
@@ -82,6 +85,7 @@ public class AuthUserController {
 
     @PostMapping("/reset-password/confirm")
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDTO dto) {
+
         authService.resetPassword(dto);
 
         return ResponseEntity.ok().body("Senha atualizada");
@@ -90,16 +94,32 @@ public class AuthUserController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user")
     public ResponseEntity<List<AuthResponseDTO>> getUserByName(
-            @RequestParam(value = "name") String name,
-            @RequestParam(value = "isVerified", defaultValue = "true") Boolean isVerified
-            ) {
+            @RequestParam(value = "name") String name
+    ) {
 
-        AuthRequestDTO AuthRequest = new AuthRequestDTO(
-                name,
-                isVerified
-        );
+        List<AuthResponseDTO> responseDTO = authService.getUserByName(name);
 
-        List<AuthResponseDTO> responseDTO = authService.getUserByName(AuthRequest);
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("user/{id}")
+    public ResponseEntity<AuthResponseDTO> findUserById(@PathVariable UUID id) {
+
+        AuthResponseDTO user = authService.findUserById(id);
+
+        return ResponseEntity.ok().body(user);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("user/{id}/{isVerify}")
+    public ResponseEntity<AuthResponseDTO> enableOrDisableAccount(
+            @PathVariable UUID id,
+            @PathVariable boolean isVerify
+    ) {
+
+        AuthResponseDTO responseDTO = authService.disableOrEnableAccount(id, isVerify);
 
         return ResponseEntity.ok().body(responseDTO);
     }
