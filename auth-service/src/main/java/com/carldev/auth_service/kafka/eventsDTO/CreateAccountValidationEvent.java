@@ -1,4 +1,4 @@
-package com.carldev.auth_service.kafka.event;
+package com.carldev.auth_service.kafka.eventsDTO;
 
 
 public record CreateAccountValidationEvent(

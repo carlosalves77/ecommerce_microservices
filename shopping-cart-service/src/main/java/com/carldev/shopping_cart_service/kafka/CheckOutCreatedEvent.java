@@ -1,6 +1,6 @@
 package com.carldev.shopping_cart_service.kafka;
 
-import com.carldev.shopping_cart_service.dto.OrderItemDTO;
+import com.carldev.shopping_cart_service.dto.request.OrderItemDTO;
 import com.carldev.shopping_cart_service.dto.request.OrderPlacementRequestDTO;
 
 import java.math.BigDecimal;

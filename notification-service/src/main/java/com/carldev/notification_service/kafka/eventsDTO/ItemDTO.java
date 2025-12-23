@@ -1,10 +1,11 @@
-package com.carldev.shopping_cart_service.dto;
+package com.carldev.notification_service.kafka.eventsDTO;
 
 import java.math.BigDecimal;
 
-public record OrderItemDTO(
+public record ItemDTO(
         String sku,
         Integer quantity,
         BigDecimal unitPrice
 ) {
+
 }

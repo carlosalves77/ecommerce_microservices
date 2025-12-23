@@ -23,8 +23,6 @@ public class KafkaProducer {
 
     @EventListener
     public void handleProductCreatedEvent(CheckOutCreatedEvent checkOutCreatedEvent) {
-        log.info("Transação comitada! Enviando para o Kafka: {} ", checkOutCreatedEvent);
-
         kafkaTemplate.send(TOPIC, String.valueOf(checkOutCreatedEvent.userId()), checkOutCreatedEvent);
 
     }

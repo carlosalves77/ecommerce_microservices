@@ -54,4 +54,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(erro);
     }
 
+    @ExceptionHandler(HandleIfCartIsEmptyException.class)
+    public ResponseEntity<Map<String, String>> handleIfCartIsEmptyException(HandleIfCartIsEmptyException ex) {
+
+        Map<String, String> erro = new HashMap<>();
+
+        erro.put("Message: ", ex.getMessage());
+
+        return ResponseEntity.badRequest().body(erro);
+    }
+
 }
