@@ -6,8 +6,10 @@ import jakarta.persistence.Enumerated;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record AuthResponseDTO(
+        UUID userId,
         String email,
         String username,
         LocalDateTime created_at,
