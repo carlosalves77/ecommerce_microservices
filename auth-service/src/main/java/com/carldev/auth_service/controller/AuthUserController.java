@@ -22,7 +22,7 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("/api/auth")
 public class AuthUserController {
 
     private final UserAuthService authService;
@@ -102,9 +102,20 @@ public class AuthUserController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/all")
+    public ResponseEntity<Page<AuthResponseDTO>> findPageableUsers(
+            @RequestParam(value = "page") int page
+    ) {
+
+        Page<AuthResponseDTO> users = authService.getAllUsers(page);
+
+        return ResponseEntity.ok().body(users);
+    }
+
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("user/{id}")
+    @GetMapping("/user/{id}")
     public ResponseEntity<AuthResponseDTO> findUserById(@PathVariable UUID id) {
 
         AuthResponseDTO user = authService.findUserById(id);
@@ -123,5 +134,6 @@ public class AuthUserController {
 
         return ResponseEntity.ok().body(responseDTO);
     }
+
 
 }
