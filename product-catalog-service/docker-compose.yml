@@ -6,7 +6,6 @@ services:
       - POSTGRES_USER=${postgres_user}
       - POSTGRES_PASSWORD=${postgres_password}
       - POSTGRES_DB=${postgres_database}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     ports:
       - "5002:5432"
     networks:
@@ -30,13 +29,17 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${spring_password}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SERVER_PORT=4004
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,prometheus
+      - MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED=true
       - SPRING_JPA_OPEN_IN_VIEW=false
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
-
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     ports:
       - "4004:4004"
     networks:
       - internal
+
+
 
 volumes:
   postgres_data:
