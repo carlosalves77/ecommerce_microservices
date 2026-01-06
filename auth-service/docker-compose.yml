@@ -29,6 +29,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=${spring_password}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SERVER_PORT=4005
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,prometheus
+      - MANAGEMENT_ENDPOINT_PROMETHEUS_ACCESS=unrestricted
       - SPRING_JPA_OPEN_IN_VIEW=false
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
       - JWT_SECRET=${JWT_SECRET}
