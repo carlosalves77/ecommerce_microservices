@@ -18,7 +18,7 @@
         </processorPath>
         <module name="notification-service" />
       </profile>
-      <profile name="Annotation profile for shopping-cart-service" enabled="true">
+      <profile name="Annotation profile for auth-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
