@@ -21,15 +21,14 @@ services:
     container_name: payment-service
     depends_on:
       - payment-service-database
-    dns:
-      - 8.8.8.8
-      - 1.1.1.1
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:19092
       - SPRING_DATASOURCE_URL=jdbc:postgresql://payment-service-database:5432/${postgres_database}
       - SPRING_DATASOURCE_USERNAME=${spring_user}
       - SPRING_DATASOURCE_PASSWORD=${spring_password}
       - SERVER_PORT=4007
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,prometheus
+      - MANAGEMENT_ENDPOINT_PROMETHEUS_ACCESS=unrestricted
       - STRIPE_API_KEY=${STRIPE_API_KEY}
       - WEBHOOK_SECRET_KEY=${WEBHOOK_SECRET_KEY}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
