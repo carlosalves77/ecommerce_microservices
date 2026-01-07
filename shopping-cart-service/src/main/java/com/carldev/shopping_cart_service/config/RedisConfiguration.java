@@ -17,8 +17,6 @@ public class RedisConfiguration {
 
     @Bean
     public LettuceConnectionFactory lettuceConnectionFactory() {
-        // ! You have to provide the redisStandaloneConfiguration or else the app wont
-        // ! work with docker
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
         redisStandaloneConfiguration.setHostName(hostName);
         redisStandaloneConfiguration.setPort(port);
