@@ -1,4 +1,4 @@
-# 🛒 E-commerce Microservices System
+#  E-commerce Microservices System
 
 ![Java](https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=java)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.7-green?style=for-the-badge&logo=spring)
@@ -11,7 +11,7 @@ Sistema robusto de microsserviços para e-commerce, desenvolvido com foco em esc
 
 ---
 
-## 🏗️ Arquitetura e Design
+##  Arquitetura e Design
 
 O sistema utiliza uma arquitetura baseada em microsserviços orquestrados por containers, seguindo o padrão MVC internamente em cada serviço. A comunicação ocorre via APIs REST (síncrona) utilizando **Feign Client** e via mensageria (assíncrona) com **Apache Kafka**.
 
@@ -37,7 +37,7 @@ graph TD
     end
 
 ```
-### 🚀 Tecnologias e Ferramentas
+###  Tecnologias e Ferramentas
 
 • Core: Java 17, Spring Boot 3.5.7
 
@@ -59,7 +59,7 @@ graph TD
 
 
 
-### 🛠️ Instalação e Execução
+###  Instalação e Execução
 Este projeto foi desenhado para rodar inteiramente via Docker, facilitando o setup do ambiente.
 
 1. Pré-requisitos
