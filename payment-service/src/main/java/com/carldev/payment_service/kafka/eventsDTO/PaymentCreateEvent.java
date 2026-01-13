@@ -1,4 +1,6 @@
-package com.carldev.payment_service.dto.request;
+package com.carldev.payment_service.kafka.eventsDTO;
+
+import com.carldev.payment_service.dto.request.ItemDTO;
 
 import java.util.List;
 import java.util.UUID;
