@@ -1,4 +1,4 @@
-package com.carldev.notification_service.dto;
+package com.carldev.notification_service.kafka.eventsDTO;
 
 import java.util.List;
 import java.util.UUID;
