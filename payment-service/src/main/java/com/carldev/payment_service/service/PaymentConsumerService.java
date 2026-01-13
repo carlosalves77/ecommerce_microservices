@@ -2,14 +2,14 @@ package com.carldev.payment_service.service;
 
 import com.carldev.payment_service.dto.request.GetItemsRequestDTO;
 import com.carldev.payment_service.dto.response.GetPaymentsResponseDTO;
-import com.carldev.payment_service.dto.response.OrderConsumeEvent;
+import com.carldev.payment_service.kafka.eventsDTO.OrderConsumeEvent;
 import com.carldev.payment_service.dto.request.AddItemRequestDTO;
 import com.carldev.payment_service.dto.request.ItemDTO;
-import com.carldev.payment_service.dto.request.PaymentCreateEvent;
+import com.carldev.payment_service.kafka.eventsDTO.PaymentCreateEvent;
 import com.carldev.payment_service.entity.Payment;
 import com.carldev.payment_service.entity.PaymentItem;
 import com.carldev.payment_service.feignClient.ProductCatalogClient;
-import com.carldev.payment_service.kafka.PaymentSuccessEvent;
+import com.carldev.payment_service.kafka.producer.PaymentSuccessEvent;
 import com.carldev.payment_service.mapper.PaymentMapper;
 import com.carldev.payment_service.repository.PaymentRepository;
 import com.carldev.payment_service.utils.PaymentStatus;
