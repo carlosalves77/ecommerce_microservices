@@ -1,7 +1,7 @@
-package com.carldev.payment_service.kafka;
+package com.carldev.payment_service.kafka.producer;
 
 import com.carldev.payment_service.dto.request.ItemDTO;
-import com.carldev.payment_service.dto.request.PaymentCreateEvent;
+import com.carldev.payment_service.kafka.eventsDTO.PaymentCreateEvent;
 
 import java.util.List;
 import java.util.UUID;
