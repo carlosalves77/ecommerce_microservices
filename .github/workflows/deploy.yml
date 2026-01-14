@@ -21,6 +21,7 @@ jobs:
 
     - name: Build com Maven
       run: mvn clean package -DskipTests
+      working-directory: ./auth-service
 
     - name: Login no Docker Hub
       uses: docker/login-action@v3
