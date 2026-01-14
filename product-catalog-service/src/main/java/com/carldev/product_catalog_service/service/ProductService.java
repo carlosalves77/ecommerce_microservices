@@ -1,5 +1,6 @@
 package com.carldev.product_catalog_service.service;
 
+import com.carldev.product_catalog_service.dto.ProductDTO.request.ProductDebitRequestDTO;
 import com.carldev.product_catalog_service.dto.ProductDTO.request.ProductRequestDTO;
 import com.carldev.product_catalog_service.dto.ProductDTO.request.UpdateProductRequestDTO;
 import com.carldev.product_catalog_service.dto.ProductDTO.response.ProductResponseDTO;
@@ -12,6 +13,10 @@ import com.carldev.product_catalog_service.mapper.ProductMapper;
 import com.carldev.product_catalog_service.repository.CategoryRepository;
 import com.carldev.product_catalog_service.repository.ProductRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -19,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ProductService {
 
@@ -32,15 +38,6 @@ public class ProductService {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productMapper = productMapper;
-    }
-
-
-    @Transactional
-    public List<ProductResponseDTO> getAllProducts() {
-        List<Product> listOfAllProducts = productRepository.findAll();
-
-        return listOfAllProducts.stream().map(productMapper::toDto
-        ).collect(Collectors.toList());
     }
 
 
@@ -90,7 +87,43 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponseDTO findProductSkuByCriteria(String sku) {
+    public ProductResponseDTO getProductDebit(ProductDebitRequestDTO requestDTO) {
+
+        Product product = productRepository.findBySku(requestDTO.sku()).orElseThrow(
+                () -> new RuntimeException("Sku não existe")
+        );
+
+        if (product.getInventory().isAvailable(requestDTO.quantity())) {
+            log.info("Produto fora de estoque");
+        }
+
+        product.getInventory()
+                .setStockQuantity(product.getInventory().getStockQuantity() - requestDTO.quantity());
+        productRepository.save(product);
+
+        return productMapper.toDto(product);
+    }
+
+    @Transactional
+    public ProductResponseDTO rollBackProduct(ProductDebitRequestDTO requestDTO) {
+
+        Product productRollBack = productRepository.findBySku(requestDTO.sku()).orElseThrow(
+                () -> new RuntimeException("Produto retornou por falha no pagamento")
+        );
+
+        productRollBack.getInventory()
+                .setStockQuantity(requestDTO.quantity() + productRollBack.getInventory().getStockQuantity());
+
+        productRollBack.getInventory()
+                .setReservedQuantity(productRollBack.
+                        getInventory().getReservedQuantity() - requestDTO.quantity());
+        productRepository.save(productRollBack);
+
+        return productMapper.toDto(productRollBack);
+    }
+
+    @Transactional
+    public ProductResponseDTO findProductSku(String sku) {
 
         Product product = productRepository.findBySku(sku).orElseThrow(
                 () -> new SkuAlreadyExistsException("Sku não existe"));
@@ -105,5 +138,29 @@ public class ProductService {
         }
 
         productRepository.deleteById(id);
+    }
+
+    @Transactional
+    public List<ProductResponseDTO> findProductByQuery(String name) {
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        List<Product> product = productRepository.findByNameContainingIgnoreCase(name, pageable);
+
+
+        return product.stream().map(productMapper::toDto).collect(Collectors.toList());
+    }
+
+
+    @Transactional
+    public Page<ProductResponseDTO> getAllProductList(int pageNumber) {
+
+        int pages = pageNumber - 1;
+
+        Pageable pageable = PageRequest.of(pages, 10);
+
+        Page<Product> listAllProducts = productRepository.findAll(pageable);
+
+        return listAllProducts.map(productMapper::toDto);
     }
 }

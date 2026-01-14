@@ -1,9 +1,11 @@
-package com.carldev.notification_service.dto;
+package com.carldev.payment_service.kafka.eventsDTO;
+
+import com.carldev.payment_service.dto.request.ItemDTO;
 
 import java.util.List;
 import java.util.UUID;
 
-public record PaymentSuccessConsumer(
+public record PaymentCreateEvent(
         UUID orderId,
         String userEmail,
         String userName,
@@ -14,5 +16,4 @@ public record PaymentSuccessConsumer(
         String paidAt,
         List<ItemDTO> items
 ) {
-
 }

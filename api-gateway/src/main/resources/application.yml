@@ -19,6 +19,11 @@ spring:
               filters:
                 - JwtValidation
 
+            - id: auth-swagger-route
+              uri: http://auth-service:4005
+              predicates:
+                - Path=/v3/api-docs/**, /swagger-ui/**, /swagger-ui.html, /webjars/**
+
             - id: product-route
               uri: http://product-catalog-service:4004
               predicates:

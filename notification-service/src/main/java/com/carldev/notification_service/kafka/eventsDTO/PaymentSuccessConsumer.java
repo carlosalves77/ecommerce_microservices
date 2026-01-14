@@ -1,9 +1,9 @@
-package com.carldev.payment_service.dto.request;
+package com.carldev.notification_service.kafka.eventsDTO;
 
 import java.util.List;
 import java.util.UUID;
 
-public record PaymentCreateEvent(
+public record PaymentSuccessConsumer(
         UUID orderId,
         String userEmail,
         String userName,
@@ -14,4 +14,5 @@ public record PaymentCreateEvent(
         String paidAt,
         List<ItemDTO> items
 ) {
+
 }
