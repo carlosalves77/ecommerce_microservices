@@ -19,8 +19,11 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Build com Maven
-      run: mvn clean package -DskipTests
+    - name: Dar permissão de execução ao Wrapper
+      run: chmod +x mvnw
+
+    - name: Build com Maven Wrapper
+      run: ./mvnw clean package -DskipTests
 
     - name: Login no Docker Hub
       uses: docker/login-action@v3
