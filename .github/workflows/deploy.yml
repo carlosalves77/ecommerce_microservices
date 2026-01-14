@@ -33,6 +33,8 @@ jobs:
       run: |
           # ${{ github.ref_name }} conterá "v1.0.5" automaticamente
           VERSION=${{ github.ref_name }}
+
+          cd auth-service
           
           echo "Gerando versão: $VERSION"
           
