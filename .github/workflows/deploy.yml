@@ -3,6 +3,7 @@ name: CI/CD Homelab
 on:
   push:
     branches: [ "master" ]
+    tags: [ "v*" ]
 
 jobs:
   build-and-deploy:
