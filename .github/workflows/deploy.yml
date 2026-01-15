@@ -3,7 +3,8 @@ name: CI/CD Homelab - Auth Service
 on:
   push:
     branches: [ "master" ]
-    # Removemos a seção 'tags'
+    paths:
+      - 'auth-service/**'  
 
 jobs:
   build-and-deploy:
@@ -24,15 +25,11 @@ jobs:
       - name: Ler versão do pom.xml
         id: get_version
         run: |
-          # Entra na pasta para ler o pom correto
           cd auth-service
-          
-          # Comando mágico do Maven para extrair apenas o número da versão
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           
           echo "Versão detectada no POM: $VERSION"
-          
-          # Salva na variável de ambiente global
+
           echo "PROJECT_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Build com Maven
