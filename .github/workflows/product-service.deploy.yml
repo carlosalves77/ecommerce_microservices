@@ -51,5 +51,5 @@ jobs:
       - name: Deploy no Kubernetes Local
         run: |
           echo "Atualizando K8s para versão: $PROJECT_VERSION"
-          kubectl set image deployment/product-catalog-service product-catalog-service=${{ secrets.DOCKER_USERNAME }}/product-catalog-service:w:$PROJECT_VERSION -n default
+          kubectl set image deployment/product-catalog-service product-catalog-service=${{ secrets.DOCKER_USERNAME }}/product-catalog-service:$PROJECT_VERSION -n default
           kubectl rollout restart deployment/product-catalog-service -n default
