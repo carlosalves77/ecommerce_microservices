@@ -2,6 +2,8 @@ name: CI/CD Homelab - Product Catalog Service
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'product-catalog-service/**'  
 
 jobs:
   build-and-deploy:
