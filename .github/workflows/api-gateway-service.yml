@@ -3,6 +3,8 @@ name: CI/CD Homelab - API Gateway
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'api-gateway/**'  
 
 jobs:
   build-and-deploy:
