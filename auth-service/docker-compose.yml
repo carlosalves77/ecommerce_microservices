@@ -36,7 +36,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
 
     ports:
-      - "4005:4005"
+      - "4005"
     networks:
       - internal
 
