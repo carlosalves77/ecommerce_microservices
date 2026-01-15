@@ -51,5 +51,5 @@ jobs:
       - name: Deploy no Kubernetes Local
         run: |
           echo "Atualizando K8s para versão: $PROJECT_VERSION"
-          kubectl set image deployment/api-gateway-deploy api-gateway=${{ secrets.DOCKER_USERNAME }}/api-gateway:$PROJECT_VERSION -n default
+          kubectl set image deployment/api-gateway-deploy api-gateway-container=${{ secrets.DOCKER_USERNAME }}/api-gateway:$PROJECT_VERSION -n default
           kubectl rollout restart deployment/api-gateway-deploy -n default
