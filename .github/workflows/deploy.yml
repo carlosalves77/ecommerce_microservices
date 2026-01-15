@@ -54,10 +54,6 @@ jobs:
           # Usa a versão extraída do POM ($PROJECT_VERSION)
           docker build -t ${{ secrets.DOCKER_USERNAME }}/auth-service:$PROJECT_VERSION .
           docker push ${{ secrets.DOCKER_USERNAME }}/auth-service:$PROJECT_VERSION
-          
-          # Opcional: Também atualiza a tag 'latest' para facilitar testes manuais
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/auth-service:latest .
-          docker push ${{ secrets.DOCKER_USERNAME }}/auth-service:latest
 
       - name: Deploy no Kubernetes Local
         run: |
