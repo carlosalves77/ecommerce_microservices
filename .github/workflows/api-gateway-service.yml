@@ -1,4 +1,4 @@
-name: CI/CD Homelab - 
+name: CI/CD Homelab - API Gateway
 
 on:
   push:
