@@ -1,9 +1,9 @@
-name: CI/CD Homelab
+name: CI/CD Homelab - Auth Service
 
 on:
   push:
     branches: [ "master" ]
-    tags: [ "v*" ]
+    # Removemos a seção 'tags'
 
 jobs:
   build-and-deploy:
@@ -20,6 +20,21 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      # --- NOVO PASSO: Extrair versão do POM ---
+      - name: Ler versão do pom.xml
+        id: get_version
+        run: |
+          # Entra na pasta para ler o pom correto
+          cd auth-service
+          
+          # Comando mágico do Maven para extrair apenas o número da versão
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          
+          echo "Versão detectada no POM: $VERSION"
+          
+          # Salva na variável de ambiente global
+          echo "PROJECT_VERSION=$VERSION" >> $GITHUB_ENV
+
       - name: Build com Maven
         run: mvn clean package -DskipTests
         working-directory: ./auth-service
@@ -32,24 +47,20 @@ jobs:
 
       - name: Build e Push da Imagem
         run: |
-            # Captura o nome (v1.0.5 ou master)
-            VERSION=${{ github.ref_name }}
-            
-            # --- O SEGREDO ESTÁ AQUI ---
-            # Salvamos a variável para os próximos passos usarem
-            echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-            cd auth-service
-            
-            echo "Gerando versão: $VERSION"
-            
-            docker build -t ${{ secrets.DOCKER_USERNAME }}/auth-service:$VERSION .
-            docker push ${{ secrets.DOCKER_USERNAME }}/auth-service:$VERSION
+          cd auth-service
+          
+          echo "Buildando imagem versão: $PROJECT_VERSION"
+          
+          # Usa a versão extraída do POM ($PROJECT_VERSION)
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/auth-service:$PROJECT_VERSION .
+          docker push ${{ secrets.DOCKER_USERNAME }}/auth-service:$PROJECT_VERSION
+          
+          # Opcional: Também atualiza a tag 'latest' para facilitar testes manuais
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/auth-service:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/auth-service:latest
 
       - name: Deploy no Kubernetes Local
-        if: startsWith(github.ref, 'refs/tags/v')
         run: |
-          echo "Fazendo deploy da versão: $VERSION"
-          kubectl set image deployment/auth-service auth-service=${{ secrets.DOCKER_USERNAME }}/auth-service:$VERSION -n default
+          echo "Atualizando K8s para versão: $PROJECT_VERSION"
+          kubectl set image deployment/auth-service auth-service=${{ secrets.DOCKER_USERNAME }}/auth-service:$PROJECT_VERSION -n default
           kubectl rollout restart deployment/auth-service -n default
-        
