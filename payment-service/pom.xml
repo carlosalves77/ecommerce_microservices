@@ -12,7 +12,7 @@
 	<artifactId>payment-service</artifactId>
 	<version>0.0.5</version>
 	<name>payment-service</name>
-	<description>Serviço de pagamento</description>
+	<description>Serviço de pagamento service</description>
 	<url/>
 	<licenses>
 		<license/>
