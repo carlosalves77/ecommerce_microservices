@@ -16,27 +16,9 @@ Sistema robusto de microsserviços para e-commerce, desenvolvido com foco em esc
 O sistema utiliza uma arquitetura baseada em microsserviços orquestrados por containers, seguindo o padrão MVC internamente em cada serviço. A comunicação ocorre via APIs REST (síncrona) utilizando **Feign Client** e via mensageria (assíncrona) com **Apache Kafka**.
 
 ### Diagrama de Arquitetura
-```mermaid
-graph TD
-    Client[Cliente / Mobile / Web] -->|HTTP Requests| Gateway[API Gateway]
-    
-    subgraph "Cluster de Microsserviços"
-        Gateway -->|Roteamento & Auth| AuthService[Auth Service]
-        Gateway -->|Roteamento| ProductService[Product Service]
-        Gateway -->|Roteamento| CartService[Cart Service]
-        Gateway -->|Roteamento| PaymentService[Payment Service]
-        
-        AuthService -.->|Persistência| Postgres[(PostgreSQL)]
-        ProductService -.->|Persistência| Postgres
-        PaymentService -.->|Persistência| Postgres
-        CartService -.->|Cache Rápido| Redis[(Redis)]
-        
-        PaymentService -->|Publica Evento| Kafka{{Apache Kafka}}
-        AuthService -->|Publica Evento| Kafka{{Apache Kafka}}
-        Kafka -.->|Consome Evento| Notification[Notification/Order Service]
-    end
 
-```
+![Diagrama de Arquitetura](./images/project-system-design.png)
+
 ###  Tecnologias e Ferramentas
 
 • Core: Java 17, Spring Boot 3.5.7
