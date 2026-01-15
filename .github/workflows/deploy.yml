@@ -49,10 +49,7 @@ jobs:
       - name: Deploy no Kubernetes Local
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
-          # Agora usamos 'env.VERSION' que foi salvo acima
-          kubectl set image deployment/auth-service auth-service=${{ secrets.DOCKER_USERNAME }}/auth-service:${{ env.VERSION }} -n default
-          
-          # Dica: Força o K8s a baixar a imagem mesmo se o nome for igual
+          echo "Fazendo deploy da versão: $VERSION"
+          kubectl set image deployment/auth-service auth-service=${{ secrets.DOCKER_USERNAME }}/auth-service:$VERSION -n default
           kubectl rollout restart deployment/auth-service -n default
-
         
