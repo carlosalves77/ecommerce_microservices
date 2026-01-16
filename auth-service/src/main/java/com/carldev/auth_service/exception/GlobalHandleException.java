@@ -1,29 +1,31 @@
 package com.carldev.auth_service.exception;
 
-import com.carldev.auth_service.dto.response.ErrorResponseDTO;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @ControllerAdvice
 public class GlobalHandleException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<List<ErrorValidationExceptionDTO>> handleValidationException(MethodArgumentNotValidException ex) {
 
-        Map<String, String> erros = new HashMap<>();
+        var errorResponse = ex.getBindingResult().getFieldErrors().stream().map(
+                erros -> new ErrorValidationExceptionDTO(
+                        HttpStatus.UNAUTHORIZED.value(),
+                        erros.getField(),
+                        erros.getDefaultMessage(),
+                        System.currentTimeMillis()
+                )
+        ).toList();
 
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                erros.put(error.getField(), error.getDefaultMessage())
-        );
-
-        return ResponseEntity.badRequest().body(erros);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
     @ExceptionHandler(UserExistEmailException.class)
@@ -34,7 +36,7 @@ public class GlobalHandleException {
                 ex.getMessage(),
                 System.currentTimeMillis()
         );
-        return ResponseEntity.badRequest().body(responseDTO);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
     }
 
     @ExceptionHandler(HandleIfInvalidTokenOrExpireException.class)
@@ -47,7 +49,7 @@ public class GlobalHandleException {
                 System.currentTimeMillis()
         );
 
-        return ResponseEntity.badRequest().body(responseDTO);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
     }
 
     @ExceptionHandler(HandleIfUserNotExistsException.class)
@@ -59,7 +61,7 @@ public class GlobalHandleException {
               System.currentTimeMillis()
       );
 
-        return ResponseEntity.badRequest().body(responseDTO);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
     }
 
     @ExceptionHandler(UserIsAlreadyVerifiedException.class)
@@ -73,7 +75,7 @@ public class GlobalHandleException {
                 System.currentTimeMillis()
         );
 
-        return ResponseEntity.badRequest().body(responseDTO);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
     }
 
     @ExceptionHandler(UserIsNotVerifyAccountException.class)
@@ -87,17 +89,17 @@ public class GlobalHandleException {
                 System.currentTimeMillis()
         );
 
-        return ResponseEntity.badRequest().body(responseDTO);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponseDTO> handleIfCredentialIsNotValidException(
             BadCredentialsException ex) {
-        ErrorResponseDTO error = new ErrorResponseDTO(
+        ErrorResponseDTO responseDTO = new ErrorResponseDTO(
                 HttpStatus.UNAUTHORIZED.value(),
                 ex.getMessage(),
                 System.currentTimeMillis()
         );
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
     }
 }
