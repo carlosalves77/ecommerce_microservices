@@ -1,15 +1,15 @@
 package com.carldev.shopping_cart_service.controller;
 
 import com.carldev.shopping_cart_service.dto.request.AddItemRequestDTO;
+import com.carldev.shopping_cart_service.dto.response.CartItemResponseDTO;
 import com.carldev.shopping_cart_service.dto.response.ProductResponseDTO;
 import com.carldev.shopping_cart_service.feignClient.ProductCatalogClient;
 import com.carldev.shopping_cart_service.redis.Cart;
 import com.carldev.shopping_cart_service.service.CartService;
-import com.carldev.shopping_cart_service.service.CheckOutService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
 
 @RestController
 @RequestMapping("/api/cart")
@@ -17,14 +17,11 @@ public class ShoppingCartController {
 
     private final ProductCatalogClient productCatalogClient;
     private final CartService cartService;
-    private final CheckOutService checkOutService;
 
     public ShoppingCartController(ProductCatalogClient productCatalogClient,
-                                  CartService cartService,
-                                  CheckOutService checkOutService) {
+                                  CartService cartService) {
         this.productCatalogClient = productCatalogClient;
         this.cartService = cartService;
-        this.checkOutService = checkOutService;
     }
 
     @GetMapping("/{sku}")
@@ -36,26 +33,28 @@ public class ShoppingCartController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> AddItemCart(
+    public ResponseEntity<CartItemResponseDTO> AddItemCart(
             Authentication authentication,
+            @Valid
             @RequestBody AddItemRequestDTO addItemRequestDTO
     ) {
 
-        cartService.AddItemToCart(authentication, addItemRequestDTO.sku(),
-                addItemRequestDTO.quantity());
+        CartItemResponseDTO responseDTO =  cartService.AddItemToCart(authentication, addItemRequestDTO);
 
-        return ResponseEntity.ok().body("Item adicionado");
+        return ResponseEntity.ok().body(responseDTO);
     }
 
     @PutMapping("/{sku}/{quantity}")
-    public ResponseEntity<String> updateItemCart(
+    public ResponseEntity<CartItemResponseDTO> updateItemCart(
+            @Valid
             @PathVariable String sku,
             @PathVariable Integer quantity,
             Authentication authentication
     ) {
 
-        cartService.UpdateQuantityCart(authentication, sku, quantity);
-        return ResponseEntity.ok().body("Sku atualizado: " + sku);
+        CartItemResponseDTO responseDTO = cartService.UpdateQuantityCart(authentication, sku, quantity);
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 
 
@@ -67,8 +66,10 @@ public class ShoppingCartController {
 
     @PostMapping("/checkout")
     public ResponseEntity<String> checkoutProcess(Authentication authentication) {
-        checkOutService.processCheckout(authentication);
-        return ResponseEntity.ok().body("Produtos enviados");
+
+        cartService.processCheckout(authentication);
+
+        return ResponseEntity.ok().body("Produtos enviado para checkout pagamento");
     }
 
     @DeleteMapping
