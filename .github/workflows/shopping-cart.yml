@@ -1,0 +1,55 @@
+name: CI/CD Homelab - Shopping Cart Service
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - 'shopping-cart-service/**'  
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Ler versão do pom.xml
+        id: get_version
+        run: |
+          cd shopping-cart-service
+          
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          
+          echo "Versão detectada no POM: $VERSION"
+          
+          echo "PROJECT_VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Build com Maven
+        run: mvn clean package -DskipTests
+        working-directory: ./shopping-cart-service
+
+      - name: Login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build e Push da Imagem
+        run: |
+          cd product-catalog-service
+          
+          echo "Buildando imagem versão: $PROJECT_VERSION"
+          
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/shopping-cart-service:$PROJECT_VERSION .
+          docker push ${{ secrets.DOCKER_USERNAME }}/shopping-cart-service:$PROJECT_VERSION
+      - name: Deploy no Kubernetes Local
+        run: |
+          echo "Atualizando K8s para versão: $PROJECT_VERSION"
+          kubectl set image deployment/shopping-cart-service shopping-cart-service=${{ secrets.DOCKER_USERNAME }}/shopping-cart-service:$PROJECT_VERSION -n default
+          kubectl rollout restart deployment/shopping-cart-service -n default
