@@ -1,7 +1,7 @@
 package com.carldev.notification_service.service;
 
-import com.carldev.notification_service.dto.CreateAccountValidationEvent;
-import com.carldev.notification_service.dto.PaymentSuccessConsumer;
+import com.carldev.notification_service.kafka.eventsDTO.CreateAccountValidationEvent;
+import com.carldev.notification_service.kafka.eventsDTO.PaymentSuccessConsumer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mailtrap.client.MailtrapClient;
 import io.mailtrap.config.MailtrapConfig;
