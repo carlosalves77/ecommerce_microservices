@@ -42,7 +42,7 @@ jobs:
 
       - name: Build e Push da Imagem
         run: |
-          cd product-catalog-service
+          cd shopping-cart-service
           
           echo "Buildando imagem versão: $PROJECT_VERSION"
           
