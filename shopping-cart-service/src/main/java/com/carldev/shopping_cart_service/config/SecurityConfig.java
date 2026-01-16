@@ -25,11 +25,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Desativa a criação de sessões (Stateless)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/actuator/prometheus").permitAll()
+                )
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**").permitAll()
+                )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                // 2. Protege TODOS os endpoints
                 .authorizeHttpRequests(authorize -> authorize
                         .anyRequest().authenticated()
                 )
