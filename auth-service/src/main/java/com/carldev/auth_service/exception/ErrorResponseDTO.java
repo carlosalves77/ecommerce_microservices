@@ -1,4 +1,4 @@
-package com.carldev.auth_service.dto.response;
+package com.carldev.auth_service.exception;
 
 public record ErrorResponseDTO(
         int Status,
