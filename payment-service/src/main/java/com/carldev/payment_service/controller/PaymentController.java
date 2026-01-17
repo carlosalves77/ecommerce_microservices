@@ -1,10 +1,10 @@
 package com.carldev.payment_service.controller;
 
-import com.carldev.payment_service.dto.request.GetItemsRequestDTO;
 import com.carldev.payment_service.dto.response.GetPaymentsResponseDTO;
 import com.carldev.payment_service.service.PaymentConsumerService;
 import com.stripe.exception.StripeException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,14 +35,11 @@ public class PaymentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GetPaymentsResponseDTO>> getAllPayments(
-            @RequestParam(value = "userName", required = false) String name
-            ) {
-        GetItemsRequestDTO getItemsRequestDTO = new GetItemsRequestDTO(
-                name
-        );
+    public ResponseEntity<Page<GetPaymentsResponseDTO>> getAllPayments(
+            @RequestParam("page") int page
+    ) {
 
-        List<GetPaymentsResponseDTO> paymentList = paymentConsumerService.getPayment(getItemsRequestDTO);
+        Page<GetPaymentsResponseDTO> paymentList = paymentConsumerService.getPayment(page);
 
         return ResponseEntity.ok().body(paymentList);
     }
