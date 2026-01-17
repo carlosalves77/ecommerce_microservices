@@ -14,7 +14,7 @@ FROM eclipse-temurin:17-jre-alpine AS runner
 
 WORKDIR /app
 
-COPY --from=builder ./app/target/payment-service-0.0.5.jar ./app.jar
+COPY --from=builder ./app/target/payment-service-0.0.6.jar ./app.jar
 
 EXPOSE 4006
 
