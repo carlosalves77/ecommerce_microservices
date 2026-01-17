@@ -48,7 +48,6 @@ public class Payment {
     PaymentStatus paymentStatus;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable  = false)
     PaymentType paymentType;
 
     @OneToMany(
