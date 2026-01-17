@@ -1,6 +1,5 @@
 package com.carldev.payment_service.service;
 
-import com.carldev.payment_service.dto.request.GetItemsRequestDTO;
 import com.carldev.payment_service.dto.response.GetPaymentsResponseDTO;
 import com.carldev.payment_service.kafka.eventsDTO.OrderConsumeEvent;
 import com.carldev.payment_service.dto.request.AddItemRequestDTO;
@@ -30,6 +29,9 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -37,7 +39,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -103,15 +104,17 @@ public class PaymentConsumerService {
 
     }
 
-    @Transactional()
-    public List<GetPaymentsResponseDTO> getPayment(GetItemsRequestDTO requestDTO) {
 
-        List<Payment> payments = paymentRepository
-                .findByUserName(requestDTO.userName()).orElseThrow(
-                        () -> new RuntimeException("Usuário não encontrado")
-                );
-        return payments.stream().map(paymentMapper::toDto)
-                .collect(Collectors.toList());
+    @Transactional()
+    public Page<GetPaymentsResponseDTO> getPayment(int pageNumber) {
+
+        int pageOne = pageNumber - 1;
+
+        Pageable page = PageRequest.of(pageOne, 10);
+
+        Page<Payment> allPayments = paymentRepository.findAll(page);
+
+        return allPayments.map(paymentMapper::toDto);
     }
 
     @Transactional
