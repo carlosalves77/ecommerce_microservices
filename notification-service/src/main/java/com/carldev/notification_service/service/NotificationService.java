@@ -21,8 +21,8 @@ public class NotificationService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${MAILTRAP_KEY}")
-    private String mailTrapkey;
+   @Value("${MAILTRAP_KEY}")
+   private String mailTrapkey;
 
     final MailtrapConfig config = new MailtrapConfig.Builder()
             .token(mailTrapkey)
@@ -54,7 +54,7 @@ public class NotificationService {
          try {
              System.out.println(client.send(mail));
          } catch (Exception e) {
-             System.out.println("Exception" + e.getCause());
+             System.out.println("Exception ao tentar enviar e-mail de auth" + e.getMessage());
          }
 
 
@@ -85,12 +85,12 @@ public class NotificationService {
            try {
                System.out.println(client.send(mail));
            } catch (Exception e) {
-               System.out.println("Exception" + e.getCause());
+               log.error("Exception ao tentar enviar e-mail do pagamento{}", e.getMessage());
            }
 
 
        } catch (Exception e) {
-           log.error("Exception {}", e.getMessage());
+           log.error("Exception try catch pagamento {}", e.getMessage());
        }
     }
 
