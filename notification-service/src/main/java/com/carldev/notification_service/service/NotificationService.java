@@ -25,9 +25,8 @@ public class NotificationService {
    private String mailTrapkey;
 
     final MailtrapConfig config = new MailtrapConfig.Builder()
-            .token(mailTrapkey)
+            .token("5b946be69e2076d6a42058f91cf8086a") // Test Token
             .build();
-
 
     final MailtrapClient client = MailtrapClientFactory.createMailtrapClient(config);
 
@@ -54,7 +53,7 @@ public class NotificationService {
          try {
              System.out.println(client.send(mail));
          } catch (Exception e) {
-             System.out.println("Exception ao tentar enviar e-mail de auth" + e.getMessage());
+             System.out.println("Exception ao tentar enviar e-mail de payment" + e.getMessage());
          }
 
 
