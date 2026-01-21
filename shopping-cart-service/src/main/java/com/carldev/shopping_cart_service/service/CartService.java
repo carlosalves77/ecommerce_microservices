@@ -210,6 +210,7 @@ public class CartService {
                 uuid,
                 email,
                 userName,
+                UUID.randomUUID(),
                 cart.getTotal(),
                 orderItemDTOList
         );
