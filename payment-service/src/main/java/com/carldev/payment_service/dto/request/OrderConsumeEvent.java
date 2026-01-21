@@ -1,4 +1,4 @@
-package com.carldev.payment_service.kafka.eventsDTO;
+package com.carldev.payment_service.dto.request;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -8,6 +8,7 @@ public record OrderConsumeEvent(
         UUID userId,
         String email,
         String userName,
+        UUID orderNumber,
         BigDecimal totalAmount,
         List<OrderItemDTO> items
 ) {
