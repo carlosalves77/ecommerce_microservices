@@ -43,6 +43,9 @@ public class Payment {
     @Column(nullable  = false)
     private BigDecimal amount;
 
+    @Column(nullable = false)
+    private UUID orderNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable  = false)
     PaymentStatus paymentStatus;
