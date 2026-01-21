@@ -1,0 +1,50 @@
+services:
+  postgres_orders:
+    image: postgres:16
+    container_name: postgres_orders_database
+    environment:
+      - POSTGRES_USER=${postgres_user}
+      - POSTGRES_PASSWORD=${postgres_password}
+      - POSTGRES_DB=${postgres_database}
+    ports:
+      - "5009:5432"
+    networks:
+      - internal
+    volumes:
+      - orders_data:/var/lib/postgresql/data
+
+  auth-service:
+    build:
+      context: .
+      target: runner
+    image: orders-service:latest
+    container_name: orders-service
+    depends_on:
+      - postgres_orders
+    env_file:
+      - .env
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_orders:5432/${postgres_database}
+      - SPRING_DATASOURCE_USERNAME=${spring_user}
+      - SPRING_DATASOURCE_PASSWORD=${spring_password}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SERVER_PORT=4009
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,prometheus
+      - MANAGEMENT_ENDPOINT_PROMETHEUS_ACCESS=unrestricted
+      - SPRING_JPA_OPEN_IN_VIEW=false
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - JWT_SECRET=${JWT_SECRET}
+
+    ports:
+      - "4009:4009"
+    networks:
+      - internal
+
+
+volumes:
+  orders_data:
+
+networks:
+  internal:
+    external: true
+
