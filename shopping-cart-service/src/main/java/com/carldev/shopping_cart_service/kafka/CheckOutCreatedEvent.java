@@ -11,6 +11,7 @@ public record CheckOutCreatedEvent(
         UUID userId,
         String email,
         String userName,
+        UUID orderNumber,
         BigDecimal totalAmount,
         List<OrderItemDTO> items
 ) {
@@ -21,6 +22,7 @@ public record CheckOutCreatedEvent(
                 requestDTO.userId(),
                 requestDTO.email(),
                 requestDTO.userName(),
+                requestDTO.orderNumber(),
                 requestDTO.totalAmount(),
                 requestDTO.items()
         );
