@@ -8,6 +8,7 @@ public record OrderPlacementRequestDTO(
         UUID userId,
         String email,
         String userName,
+        UUID orderNumber,
         BigDecimal totalAmount,
         List<OrderItemDTO> items
         ) {
