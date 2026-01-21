@@ -1,13 +1,10 @@
 package com.carldev.payment_service.service;
 
-import com.carldev.payment_service.dto.response.GetPaymentsResponseDTO;
-import com.carldev.payment_service.kafka.eventsDTO.OrderConsumeEvent;
-import com.carldev.payment_service.dto.request.AddItemRequestDTO;
 import com.carldev.payment_service.dto.request.ItemDTO;
-import com.carldev.payment_service.kafka.eventsDTO.PaymentCreateEvent;
+import com.carldev.payment_service.dto.response.GetPaymentsResponseDTO;
 import com.carldev.payment_service.entity.Payment;
 import com.carldev.payment_service.entity.PaymentItem;
-import com.carldev.payment_service.feignClient.ProductCatalogClient;
+import com.carldev.payment_service.dto.request.OrderConsumeEvent;
 import com.carldev.payment_service.kafka.producer.PaymentSuccessEvent;
 import com.carldev.payment_service.mapper.PaymentMapper;
 import com.carldev.payment_service.repository.PaymentRepository;
@@ -38,7 +35,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -49,7 +49,6 @@ public class PaymentConsumerService {
     private final PaymentRepository paymentRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final ObjectMapper objectMapper;
-    private final ProductCatalogClient productCatalogClient;
     private final PaymentMapper paymentMapper;
     Event event;
 
@@ -61,12 +60,11 @@ public class PaymentConsumerService {
 
 
     public PaymentConsumerService(PaymentRepository paymentRepository,
-                                  ApplicationEventPublisher eventPublisher, ObjectMapper objectMapper,
-                                  ProductCatalogClient productCatalogClient, PaymentMapper paymentMapper) {
+                                  ApplicationEventPublisher eventPublisher, ObjectMapper objectMapper
+            , PaymentMapper paymentMapper) {
         this.paymentRepository = paymentRepository;
         this.eventPublisher = eventPublisher;
         this.objectMapper = objectMapper;
-        this.productCatalogClient = productCatalogClient;
         this.paymentMapper = paymentMapper;
     }
 
@@ -81,14 +79,15 @@ public class PaymentConsumerService {
             groupId = "${spring.kafka.consumer.group-id}")
     public void createPayment(OrderConsumeEvent orderConsumeEvent) {
 
+
         Payment payment = new Payment();
 
         payment.setUserId(orderConsumeEvent.userId());
         payment.setAmount(orderConsumeEvent.totalAmount());
         payment.setEmail(orderConsumeEvent.email());
         payment.setUserName(orderConsumeEvent.userName());
+        payment.setOrderNumber(orderConsumeEvent.orderNumber());
         payment.setPaymentStatus(PaymentStatus.PENDING);
-
 
         orderConsumeEvent.items().forEach(
                 item -> {
@@ -101,7 +100,6 @@ public class PaymentConsumerService {
         );
 
         paymentRepository.save(payment);
-
     }
 
 
@@ -129,7 +127,6 @@ public class PaymentConsumerService {
         }
 
         try {
-
             BigDecimal totalValue = payment.getAmount().multiply(new BigDecimal("100"));
 
             String itemJson;
@@ -146,6 +143,7 @@ public class PaymentConsumerService {
             metadata.put("userName", payment.getUserName());
             metadata.put("email", payment.getEmail());
             metadata.put("amount", payment.getAmount().toString());
+            metadata.put("orderNumber", payment.getOrderNumber().toString());
             metadata.put("items", itemJson);
 
             PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
@@ -171,6 +169,9 @@ public class PaymentConsumerService {
 
             PaymentMethodCollection paymentMethods = PaymentMethod.list(listParams);
 
+            if (paymentMethods.getData().isEmpty()) {
+                throw new RuntimeException("Cliente não possui cartão vinculado");
+            }
 
             String savedPaymentMethod = paymentMethods.getData().get(0).getId();
 
@@ -178,6 +179,7 @@ public class PaymentConsumerService {
                     .setPaymentMethod(savedPaymentMethod)
                     .setReturnUrl("http://localhost:4007/api/payment/success-mock")
                     .build();
+
 
             paymentIntent.confirm(confirmParams);
 
@@ -196,134 +198,150 @@ public class PaymentConsumerService {
         paymentRepository.deleteById(payment.getId());
     }
 
-
+    @Transactional
     public void webhook(String payload, String sigHeader) throws StripeException {
 
         try {
             event = Webhook.constructEvent(payload, sigHeader, webhookSecretKey);
-
         } catch (SignatureVerificationException e) {
             log.info("Erro de assinatura {} ", e.getMessage());
         } catch (Exception e) {
             throw new RuntimeException("Erro no Webhook" + e.getMessage());
         }
 
-        if (Objects.equals(event.getType(), "payment_intent.succeeded")) {
+        EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
 
-            EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
-            PaymentIntent paymentIntent = (PaymentIntent) dataObjectDeserializer.getObject().orElse(null);
+        StripeObject stripeObject = dataObjectDeserializer.getObject().orElse(null);
 
-            assert paymentIntent != null;
-            String chargeId = paymentIntent.getLatestCharge();
-            String paymentMethodType = "";
-            String last4 = "";
-
-
-            if (chargeId != null) {
-                try {
-                    Charge charge = Charge.retrieve(chargeId);
-
-                    if (charge.getPaymentMethodDetails()
-                            != null && charge.getPaymentMethodDetails().getCard() != null) {
-
-                        last4 = charge.getPaymentMethodDetails().getCard().getLast4();
-                        paymentMethodType = charge.getPaymentMethodDetails().getType();
-                    }
-                } catch (StripeException e) {
-                    log.error("Erro ao buscar charge {}", e.getMessage());
-                }
-
-                Map<String, String> getMetadata = paymentIntent.getMetadata();
-                String currencyPaymentCountry = paymentIntent.getCurrency();
-
-                Map<String, String> paymentToProvider = new HashMap<>();
-                paymentToProvider.put("userId", getMetadata.get("userId"));
-                paymentToProvider.put("userEmail", getMetadata.get("email"));
-                paymentToProvider.put("userName", getMetadata.get("userName"));
-                paymentToProvider.put("amountTotal", getMetadata.get("amount"));
-                paymentToProvider.put("listItems", getMetadata.get("items"));
-                paymentToProvider.put("last4", last4);
-                paymentToProvider.put("currency", currencyPaymentCountry);
-                paymentToProvider.put("paymentMethod", paymentMethodType);
-                paymentToProvider.put("paidAt", String.valueOf(Instant.now()));
-
-                List<ItemDTO> listaDeItens = new ArrayList<>();
-
-                try {
-                    listaDeItens = objectMapper.readValue(paymentToProvider.get("listItems"),
-                            new TypeReference<List<ItemDTO>>() {
-                            });
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-
-                String id = getMetadata.get("id");
-                Payment payment = paymentRepository.findById(UUID.fromString(id)).orElseThrow(
-                        () -> new RuntimeException("Usuário não encontrado")
-                );
-
-                payment.setPaymentStatus(PaymentStatus.APPROVED);
-                switch (paymentMethodType) {
-                    case "card" -> {
-                        payment.setPaymentType(PaymentType.CARD);
-                    }
-                    case "pix" -> {
-                        payment.setPaymentType(PaymentType.PIX);
-                    }
-                    case "boleto" -> {
-                        payment.setPaymentType(PaymentType.BOLETO);
-                    }
-                }
-
-                listaDeItens.forEach(items -> {
-                    AddItemRequestDTO itemsDTO = new AddItemRequestDTO(
-                            items.sku(),
-                            items.quantity()
-                    );
-                    productCatalogClient.getProductDebit(itemsDTO);
-                });
-
-                paymentRepository.save(payment);
-
-                PaymentCreateEvent paymentCreateEvent = toMapDto(paymentToProvider, listaDeItens);
-
-                PaymentSuccessEvent event = PaymentSuccessEvent.fromEntity(paymentCreateEvent);
-
-                eventPublisher.publishEvent(event);
-
-            }
-
-        } else if ("payment_intent.payment_failed".equals(event.getType())) {
-
-            EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
-            PaymentIntent paymentIntent = (PaymentIntent) dataObjectDeserializer.getObject().orElse(null);
-
-            assert paymentIntent != null;
-            Map<String, String> getMetadata = paymentIntent.getMetadata();
-
-            String id = getMetadata.get("id");
-            Payment payment = paymentRepository.findById(UUID.fromString(id)).orElseThrow(
-                    () -> new RuntimeException("Usuário não encontrado")
-            );
-
-            payment.setPaymentStatus(PaymentStatus.REJECTED);
-
+        if (stripeObject == null) {
+            log.error("Falha ao desserializar objeto");
+            return;
         }
 
-    }
+        if (!(stripeObject instanceof PaymentIntent)) {
+            log.debug("Evento ignorado: {} - Tipo: {}", event.getType(),
+                    stripeObject.getClass().getSimpleName());
+            return;
+        }
 
-    public PaymentCreateEvent toMapDto(Map<String, String> paymentToProvider, List<ItemDTO> listaDeItens) {
+        PaymentIntent paymentIntent = (PaymentIntent) stripeObject;
+        Map<String, String> metadata = paymentIntent.getMetadata();
 
-        return new PaymentCreateEvent(
-                UUID.fromString(paymentToProvider.get("userId")),
-                paymentToProvider.get("userEmail"),
-                paymentToProvider.get("userName"),
-                paymentToProvider.get("amountTotal"),
-                paymentToProvider.get("currency"),
-                paymentToProvider.get("paymentMethod"),
-                paymentToProvider.get("last4"),
-                paymentToProvider.get("paidAt"),
-                listaDeItens
+        if (metadata == null || !metadata.containsKey("id")) {
+            log.warn("Webhook recebido sem metados ou ID");
+            return;
+        }
+
+        String paymentIdStr = metadata.get("id");
+
+        if (paymentIdStr == null) {
+            log.warn("Webhook recebida sem Id de pagamento");
+            return;
+        }
+
+        UUID paymentId = UUID.fromString(paymentIdStr);
+        Payment payment = paymentRepository.findById(paymentId).orElseThrow(
+                () -> new RuntimeException("Pagamento não encontrado: " + paymentId)
         );
+
+        switch (event.getType()) {
+            case "payment_intent.succeeded":
+                handleSuccess(payment, paymentIntent);
+                break;
+            case "payment_intent.payment_failed":
+                handleFailure(payment, paymentIntent);
+                break;
+
+            default:
+                log.info("Evento não tratado: {}", event.getType());
+        }
     }
+
+    private void handleSuccess(Payment payment, PaymentIntent paymentIntent) {
+
+        if (payment.getPaymentStatus() == PaymentStatus.APPROVED) {
+            log.info("Evento duplicado: " + payment.getId());
+            return;
+        }
+
+        String last4 = "";
+        String paymentMethodType = "desconhecido";
+
+        String chargeId = paymentIntent.getLatestCharge();
+        if (chargeId != null) {
+            try {
+                Charge charge = Charge.retrieve(chargeId);
+                if (charge.getPaymentMethodDetails() != null) {
+                    paymentMethodType = charge.getPaymentMethodDetails().getType();
+                    if (charge.getPaymentMethodDetails().getCard() != null) {
+                        last4 = charge.getPaymentMethodDetails().getCard().getLast4();
+                    }
+                }
+
+            } catch (StripeException e) {
+                log.error("Error ao buscar charge" + e.getMessage());
+            }
+        }
+
+        payment.setPaymentStatus(PaymentStatus.APPROVED);
+        payment.setUpdatedAt(Instant.now());
+
+        try {
+            List<ItemDTO> listOfItems = objectMapper.readValue(
+                    paymentIntent.getMetadata().get("items"),
+                    new TypeReference<List<ItemDTO>>() {
+                    }
+            );
+
+            PaymentSuccessEvent event = new PaymentSuccessEvent(
+                    payment.getUserId(),
+                    payment.getEmail(),
+                    payment.getUserName(),
+                    payment.getOrderNumber(),
+                    payment.getAmount().toString(),
+                    paymentIntent.getCurrency(),
+                    paymentMethodType,
+                    last4,
+                    String.valueOf(Instant.now()),
+                    listOfItems
+            );
+
+            updatePaymentType(payment, paymentMethodType);
+            eventPublisher.publishEvent(event);
+
+        } catch (JsonProcessingException e) {
+            log.error("Erro ao ler Json de itens: " + e.getMessage());
+        }
+
+        paymentRepository.save(payment);
+    }
+
+    private void handleFailure(Payment payment, PaymentIntent paymentIntent) {
+
+        if (payment.getPaymentStatus() == PaymentStatus.REJECTED) {
+            return;
+        }
+
+        String reason = "Erro";
+
+        if (paymentIntent.getLastPaymentError() == null) {
+            reason = paymentIntent.getLastPaymentError().getMessage();
+            log.warn("Falha no pagamento: {} {}", payment.getId(), reason);
+        }
+
+        payment.setPaymentStatus(PaymentStatus.REJECTED);
+        // TODO - Fazer campo de mensagem de erro
+        //        payment.setFailureMessage(reason);
+
+        paymentRepository.save(payment);
+    }
+
+    private void updatePaymentType(Payment payment, String type) {
+        switch (type) {
+            case "card" -> payment.setPaymentType(PaymentType.CARD);
+            case "pix" -> payment.setPaymentType(PaymentType.PIX);
+            case "boleto" -> payment.setPaymentType(PaymentType.BOLETO);
+        }
+    }
+
 }
