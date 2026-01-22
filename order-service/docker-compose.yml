@@ -33,7 +33,6 @@ services:
       - MANAGEMENT_ENDPOINT_PROMETHEUS_ACCESS=unrestricted
       - SPRING_JPA_OPEN_IN_VIEW=false
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
-      - JWT_SECRET=${JWT_SECRET}
 
     ports:
       - "4009:4009"
