@@ -76,9 +76,12 @@ public class PaymentConsumerService {
 
     @KafkaListener(
             topics = "checkout-create",
-            groupId = "${spring.kafka.consumer.group-id}")
-    public void createPayment(OrderConsumeEvent orderConsumeEvent) {
+            groupId = "checkout-consumer")
+    public void createPayment(String messageJson) throws JsonProcessingException {
 
+        OrderConsumeEvent orderConsumeEvent = objectMapper.readValue(
+                messageJson, OrderConsumeEvent.class
+        );
 
         Payment payment = new Payment();
 
@@ -243,6 +246,8 @@ public class PaymentConsumerService {
         Payment payment = paymentRepository.findById(paymentId).orElseThrow(
                 () -> new RuntimeException("Pagamento não encontrado: " + paymentId)
         );
+
+        log.info("Qual o tipo de evento {}",event.getType());
 
         switch (event.getType()) {
             case "payment_intent.succeeded":
