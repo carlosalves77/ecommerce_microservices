@@ -75,6 +75,20 @@ spring:
               filters:
                 - RewritePath=/payment/(?<segment>.*), /$\{segment}
 
+            - id: orders-service-route
+              uri: http://orders-service:4009
+              predicates:
+                - Path=/api/orders/**
+              filters:
+                - JwtValidation
+
+            - id: orders-service-swagger-route
+              uri: http://orders-service:4009
+              predicates:
+                - Path=/orders/v3/api-docs/**
+              filters:
+                - RewritePath=/orders/(?<segment>.*), /$\{segment}
+
 
 
 springdoc:
@@ -90,5 +104,7 @@ springdoc:
         url: /cart/v3/api-docs
       - name: Payment Service
         url: /payment/v3/api-docs
+      - name: Order Service
+        url: /orders/v3/api-docs
   api-docs:
     enabled: true
