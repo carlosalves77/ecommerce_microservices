@@ -16,6 +16,7 @@ import com.carldev.shopping_cart_service.redis.Cart;
 import com.carldev.shopping_cart_service.redis.CartItem;
 import com.carldev.shopping_cart_service.repository.CartRepository;
 import feign.FeignException;
+import io.hypersistence.tsid.TSID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
@@ -187,17 +188,16 @@ public class CartService {
         CheckOutCreatedEvent event = CheckOutCreatedEvent.fromEntity(requestDTO);
 
         eventPublisher.publishEvent(event);
-
-
         cart.getItems().clear();
         cart.recalculateTotal();
-        cartRepository.save(cart);
 
+        cartRepository.save(cart);
 
     }
 
 
     private OrderPlacementRequestDTO mapToOrder(Cart cart, UUID uuid, String email, String userName) {
+
 
         List<OrderItemDTO> orderItemDTOList = cart.getItems().stream()
                 .map(items -> new OrderItemDTO(
@@ -206,11 +206,14 @@ public class CartService {
                         items.getPrice()
                 )).toList();
 
+        TSID tsid = TSID.fast();
+        long orderNumber = tsid.toLong();
+
         return new OrderPlacementRequestDTO(
                 uuid,
                 email,
                 userName,
-                UUID.randomUUID(),
+                orderNumber,
                 cart.getTotal(),
                 orderItemDTOList
         );
