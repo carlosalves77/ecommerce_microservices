@@ -9,7 +9,7 @@ public record PaymentSuccessEvent(
         UUID orderId,
         String userEmail,
         String userName,
-        UUID orderNumber,
+        Long orderNumber,
         String totalAmount,
         String currency,
         String paymentMethod,
