@@ -8,7 +8,7 @@ public record OrderConsumeEvent(
         UUID userId,
         String email,
         String userName,
-        UUID orderNumber,
+        Long orderNumber,
         BigDecimal totalAmount,
         List<OrderItemDTO> items
 ) {
