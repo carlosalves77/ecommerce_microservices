@@ -44,7 +44,7 @@ public class Payment {
     private BigDecimal amount;
 
     @Column(nullable = false)
-    private UUID orderNumber;
+    private Long orderNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable  = false)
