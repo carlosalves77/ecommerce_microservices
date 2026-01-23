@@ -324,6 +324,7 @@ public class PaymentConsumerService {
     private void handleFailure(Payment payment, PaymentIntent paymentIntent) {
 
         if (payment.getPaymentStatus() == PaymentStatus.REJECTED) {
+            log.info("Pagamento recusado/falha: {}", payment.getPaymentStatus());
             return;
         }
 

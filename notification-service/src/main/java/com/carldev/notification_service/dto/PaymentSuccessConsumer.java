@@ -1,4 +1,4 @@
-package com.carldev.notification_service.kafka.eventsDTO;
+package com.carldev.notification_service.dto;
 
 import java.util.List;
 import java.util.UUID;
@@ -7,6 +7,7 @@ public record PaymentSuccessConsumer(
         UUID orderId,
         String userEmail,
         String userName,
+        long orderNumber,
         String totalAmount,
         String currency,
         String paymentMethod,
