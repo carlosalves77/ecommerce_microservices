@@ -1,0 +1,51 @@
+services:
+  payment-service-database:
+    image: postgres:16
+    container_name: payment-service-database
+    environment:
+      - POSTGRES_USER=${postgres_user}
+      - POSTGRES_PASSWORD=${postgres_password}
+      - POSTGRES_DB=${postgres_database}
+    ports:
+      - "5003:5432"
+    networks:
+      - internal
+    volumes:
+      - payment_service_data:/var/lib/postgresql/data
+
+  payment-service:
+    build:
+      context: .
+      target: runner
+    image: payment-service:latest
+    container_name: payment-service
+    depends_on:
+      - payment-service-database
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:19092
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://payment-service-database:5432/${postgres_database}
+      - SPRING_DATASOURCE_USERNAME=${spring_user}
+      - SPRING_DATASOURCE_PASSWORD=${spring_password}
+      - SERVER_PORT=4007
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,prometheus
+      - MANAGEMENT_ENDPOINT_PROMETHEUS_ACCESS=unrestricted
+      - STRIPE_API_KEY=${STRIPE_API_KEY}
+      - WEBHOOK_SECRET_KEY=${WEBHOOK_SECRET_KEY}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_OPEN_IN_VIEW=false
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+    ports:
+      - "4007:4007"
+    networks:
+      - internal
+
+
+volumes:
+  kafka_data:
+  payment_service_data:
+
+networks:
+  internal:
+    external: true
+
+

@@ -16,9 +16,11 @@ public class JwtValidationGatewayFilterFactory extends AbstractGatewayFilterFact
     public static final List<String> openApiEndPoints = List.of(
             "/api/auth/login",
             "/api/auth/register",
-            "/api/auth/verify-account"
-
+            "/api/auth/verify-account",
+            "/api/auth/reset-password",
+            "/api/auth/reset-password/confirm"
     );
+
     private final WebClient webClient;
 
     public JwtValidationGatewayFilterFactory(WebClient.Builder webClientBuild,

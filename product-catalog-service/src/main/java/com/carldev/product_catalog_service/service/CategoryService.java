@@ -6,6 +6,10 @@ import com.carldev.product_catalog_service.entity.Category;
 import com.carldev.product_catalog_service.exception.SlugAlreadyExistsException;
 import com.carldev.product_catalog_service.mapper.CategoryMapper;
 import com.carldev.product_catalog_service.repository.CategoryRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,12 +26,15 @@ public class CategoryService {
         this.categoryMapper = categoryMapper;
     }
 
-    public List<CategoryResponseDTO> getAllCategories() {
+    public Page<CategoryResponseDTO> getAllCategories(int page) {
 
-        List<Category> allCategories = categoryRepository.findAll();
+        int pageNumber = page - 1;
 
-        return allCategories.stream().map(categoryMapper::toDto
-        ).collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(pageNumber, 10);
+
+        Page<Category> allCategories = categoryRepository.findAll(pageable);
+
+        return allCategories.map(categoryMapper::toDto);
     }
 
     public CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO) {
@@ -70,5 +77,18 @@ public class CategoryService {
         categoryRepository.deleteById(id);
     }
 
+
+    public List<CategoryResponseDTO> findBySlug(String slug) {
+
+        if (slug.isBlank()) {
+            throw new RuntimeException("Slug está vazio");
+        }
+
+        List<Category> categoryList = categoryRepository.findBySlugContainingIgnoreCase(slug);
+
+        return categoryList.stream().map(categoryMapper::toDto).collect(
+                Collectors.toList()
+        );
+    }
 
 }

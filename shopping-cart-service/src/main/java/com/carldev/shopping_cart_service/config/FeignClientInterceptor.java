@@ -19,8 +19,6 @@ public class FeignClientInterceptor implements RequestInterceptor {
 
 
         if (authentication == null) {
-
-            log.warn("Interceptor Feign: 'Authentication' está NULO. Nenhuma header será adicionada.");
             return;
         }
 
@@ -29,14 +27,7 @@ public class FeignClientInterceptor implements RequestInterceptor {
             Jwt jwt = (Jwt) authentication.getPrincipal();
 
             String tokenValue = jwt.getTokenValue();
-
-            log.info("Interceptor Feign: Adicionando Bearer Token na requisição para -> {}"
-                    , requestTemplate.url());
-
             requestTemplate.header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenValue);
-        } else {
-            log.warn("Interceptor Feign: 'Principal' não é uma instância de Jwt. Tipo: {}"
-                    , authentication.getPrincipal().getClass().getName());
         }
     }
 }

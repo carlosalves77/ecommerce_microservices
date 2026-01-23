@@ -8,13 +8,13 @@ RUN mvn dependency:go-offline -B
 
 COPY src ./src
 
-RUN mvn clean package
+RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:17-jdk AS runner
+FROM eclipse-temurin:17-jre-alpine AS runner
 
 WORKDIR /app
 
-COPY --from=builder ./app/target/product-catalog-service-0.0.1-SNAPSHOT.jar ./app.jar
+COPY --from=builder ./app/target/product-catalog-service-0.0.5.jar ./app.jar
 
 EXPOSE 4000
 

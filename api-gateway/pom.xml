@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.carldev</groupId>
 	<artifactId>api-gateway</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.5</version>
 	<name>api-gateway</name>
 	<description>API GATEWAY</description>
 	<url/>
@@ -49,6 +49,13 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+			<version>2.2.0</version> </dependency>
+
+
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
