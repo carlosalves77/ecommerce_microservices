@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class KafkaProducer {
 
-    private static final String TOPIC = "payment-service";
+    private static final String TOPIC = "payment-success";
     private final KafkaTemplate<String, PaymentSuccessEvent> kafkaTemplate;
 
     public KafkaProducer(KafkaTemplate<String, PaymentSuccessEvent> kafkaTemplate) {

@@ -18,7 +18,7 @@
         </processorPath>
         <module name="notification-service" />
       </profile>
-      <profile name="Annotation profile for auth-service" enabled="true">
+      <profile name="Annotation profile for shopping-cart-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -29,6 +29,7 @@
         </processorPath>
         <module name="auth-service" />
         <module name="payment-service" />
+        <module name="order-service" />
         <module name="product-catalog-service" />
         <module name="shopping-cart-service" />
       </profile>
@@ -39,6 +40,7 @@
       <module name="api-gateway" options="-parameters" />
       <module name="auth-service" options="-parameters" />
       <module name="notification-service" options="-parameters" />
+      <module name="order-service" options="-parameters" />
       <module name="payment-service" options="-parameters" />
       <module name="product-catalog-service" options="-parameters" />
       <module name="shopping-cart-service" options="-parameters" />

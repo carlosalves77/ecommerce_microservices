@@ -7,10 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -18,15 +15,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<ErrorValidationExceptionDTO>> handleValidationException(MethodArgumentNotValidException ex) {
 
-    var exceptionDTOS = ex.getBindingResult().getFieldErrors().stream().map(
-            erros -> new ErrorValidationExceptionDTO(
-                    HttpStatus.UNAUTHORIZED.value(),
-                    erros.getField(),
-                    erros.getDefaultMessage(),
-                    System.currentTimeMillis()
-            )
-    ).toList();
-        return ResponseEntity.ok().body(exceptionDTOS);
+        var exceptionDTOS = ex.getBindingResult().getFieldErrors().stream().map(
+                erros -> new ErrorValidationExceptionDTO(
+                        HttpStatus.UNAUTHORIZED.value(),
+                        erros.getField(),
+                        erros.getDefaultMessage(),
+                        System.currentTimeMillis()
+                )
+        ).toList();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionDTOS);
 
     }
 
@@ -39,7 +37,7 @@ public class GlobalExceptionHandler {
                 System.currentTimeMillis()
         );
 
-        return ResponseEntity.ok().body(responseDTO);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
 
     }
 
@@ -51,7 +49,7 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 System.currentTimeMillis()
         );
-        return ResponseEntity.ok().body(responseDTO);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
 
     }
 
@@ -64,7 +62,7 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 System.currentTimeMillis()
         );
-        return ResponseEntity.ok().body(responseDTO);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
 
     }
 
@@ -76,7 +74,7 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 System.currentTimeMillis()
         );
-        return ResponseEntity.ok().body(responseDTO);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
     }
 
 }
