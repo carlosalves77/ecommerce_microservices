@@ -2,11 +2,13 @@ package com.carldev.order_service.service;
 
 import com.carldev.order_service.dto.request.AddItemRequestDTO;
 import com.carldev.order_service.dto.request.CheckoutCreate;
+import com.carldev.order_service.dto.request.OrderStatusItem;
 import com.carldev.order_service.dto.request.PaymentSuccessConsumer;
 import com.carldev.order_service.dto.response.DeletePaymentResponseDTO;
 import com.carldev.order_service.dto.response.OrderStatusResponseDTO;
 import com.carldev.order_service.dto.response.OrdersResponseDTO;
 import com.carldev.order_service.feignClient.ProductCatalogClient;
+import com.carldev.order_service.kafka.producer.OrderChangeEvent;
 import com.carldev.order_service.kafka.producer.PaymentSuccessEvent;
 import com.carldev.order_service.mapper.OrderMapper;
 import com.carldev.order_service.model.Order;
@@ -124,10 +126,24 @@ public class OrderService {
             log.info("Produto está cancelado");
         }
 
+        if (orderStatus.equals(order.getStatus())) {
+            throw new RuntimeException("Status já setado");
+        }
+
         order.setStatus(orderStatus);
         order.setUpdateAt(LocalDateTime.now());
 
-        // TODO - Implementar no Kafka o status
+        OrderChangeEvent orderChangeEvent = new OrderChangeEvent(
+            order.getUserId(),
+            order.getEmail(),
+            order.getUserName(),
+            order.getOrderNumber(),
+            order.getTotalAmount(),
+            order.getStatus(),
+            order.getUpdateAt().toString()
+        );
+
+        eventPublisher.publishEvent(orderChangeEvent);
 
         return orderMapper.toOrderStatusResponseDto(order);
     }
