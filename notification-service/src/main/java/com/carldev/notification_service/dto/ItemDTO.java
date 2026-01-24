@@ -1,4 +1,4 @@
-package com.carldev.notification_service.kafka.eventsDTO;
+package com.carldev.notification_service.dto;
 
 import java.math.BigDecimal;
 

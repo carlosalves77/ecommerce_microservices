@@ -1,7 +1,8 @@
 package com.carldev.notification_service.service;
 
-import com.carldev.notification_service.kafka.eventsDTO.CreateAccountValidationEvent;
-import com.carldev.notification_service.kafka.eventsDTO.PaymentSuccessConsumer;
+import com.carldev.notification_service.dto.CreateAccountValidationEvent;
+import com.carldev.notification_service.dto.PaymentSuccessConsumer;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mailtrap.client.MailtrapClient;
 import io.mailtrap.config.MailtrapConfig;
@@ -21,17 +22,17 @@ public class NotificationService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-   @Value("${MAILTRAP_KEY}")
-   private String mailTrapkey;
+    String token = System.getenv("MAILTRAP_KEY");
+
 
     final MailtrapConfig config = new MailtrapConfig.Builder()
-            .token("5b946be69e2076d6a42058f91cf8086a") // Test Token
+            .token(token)
             .build();
 
     final MailtrapClient client = MailtrapClientFactory.createMailtrapClient(config);
 
 
-    @KafkaListener(topics = "payment-service", groupId = "notification-service-group")
+    @KafkaListener(topics = "payment-success", groupId = "notification-service-group")
     public void handlePaymentSuccess(String  messageJson) {
 
      try {
@@ -64,9 +65,9 @@ public class NotificationService {
     }
 
     @KafkaListener(topics = "auth-producer", groupId = "notification-auth-group")
-    public void handleAuthAccountValidation(String mensagemJson) {
+    public void handleAuthAccountValidation(String messageJson) {
        try {
-           CreateAccountValidationEvent createAccountValidationEvent = objectMapper.readValue(mensagemJson,
+           CreateAccountValidationEvent createAccountValidationEvent = objectMapper.readValue(messageJson,
                    CreateAccountValidationEvent.class);
 
            String msg = "Olá " + createAccountValidationEvent.userName() + "! Segue seu link para " +
@@ -92,6 +93,18 @@ public class NotificationService {
            log.error("Exception try catch pagamento {}", e.getMessage());
        }
     }
+
+
+    // TODO - Criar metodo caso a ordem tenha alteração notificar
+//    @KafkaListener(topics = "order-change-notification", groupId = "notification-service-group")
+//    public void handleOrderStatusChanges(String messageJson) throws JsonProcessingException {
+//
+//        CreateAccountValidationEvent createAccountValidationEvent = objectMapper.readValue(messageJson,
+//                CreateAccountValidationEvent.class);
+//
+//
+//
+//    }
 
 
 }
