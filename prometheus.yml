@@ -22,6 +22,12 @@ scrape_configs:
     static_configs:
       - targets: [ 'shopping-cart-service:4006' ]
 
+
+  - job_name: 'orders-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'orders-service:4009' ]
+
   - job_name: 'notification-service'
     metrics_path: '/actuator/prometheus'
     static_configs:
