@@ -174,7 +174,7 @@ Variável,Descrição,Exemplo
 SPRING_USER = <nome_do_usuario_igual_do_banco>
 SPRING_PASSWORD = <senha_do_usuario_igual_do_banco>
 
-POSTGRES_USER = <nome_usuario_do_usuario>
+POSTGRES_USER = <nome_usuario_do_banco>
 POSTGRES_PASSWORD = <senha_do_banco>
 POSTGRES_DB = <nome_do_banco>
 JWT_SECRET = <minha_chave_super_secreta_256bit>
