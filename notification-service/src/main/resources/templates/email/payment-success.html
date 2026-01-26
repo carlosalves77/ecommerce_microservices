@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Pagamento Aprovado</title>
+    <style>
+        body { margin: 0; padding: 0; background-color: #f4f4f7; font-family: sans-serif; color: #555; }
+        /* Tabela Zebrada para os itens */
+        .item-row:nth-child(even) { background-color: #f9f9f9; }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f4f7;">
+
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td style="padding: 20px 0;" align="center">
+
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+
+                <tr>
+                    <td style="background-color: #48bb78; padding: 40px 30px; text-align: center;">
+                        <h1 style="color: #ffffff; margin: 0; font-size: 28px;">Pagamento Aprovado!</h1>
+                        <p style="color: #e6fffa; margin: 10px 0 0 0; font-size: 16px;">Seu pedido já está sendo processado.</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 40px 30px;">
+                        <p style="font-size: 16px; color: #333;">Olá, <strong th:text="${userName}">Cliente</strong>!</p>
+                        <p>Recebemos a confirmação do seu pagamento. Abaixo estão os detalhes da sua compra.</p>
+
+                        <div style="background-color: #f0fff4; border: 1px solid #c6f6d5; border-radius: 6px; padding: 20px; margin: 25px 0;">
+                            <table width="100%">
+                                <tr>
+                                    <td style="color: #2f855a; font-weight: bold;">Pedido:</td>
+                                    <td align="right" style="color: #333;" th:text="${'#' + orderNumber}">#1234</td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #2f855a; font-weight: bold;">Valor Total:</td>
+                                    <td align="right" style="color: #333; font-weight: bold; font-size: 18px;"
+                                        th:text="${currency + ' ' + totalAmount}">BRL 150.00</td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #2f855a; font-weight: bold;">Método:</td>
+                                    <td align="right" style="color: #333;">
+                                        <span th:text="${paymentMethod}">CREDIT_CARD</span>
+                                        <span th:if="${cardLast4 != null}" th:text="${' (Final ' + cardLast4 + ')'}"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #2f855a; font-weight: bold;">Data:</td>
+                                    <td align="right" style="color: #333;" th:text="${paidAt}">25/01/2026</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h3 style="color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px;">Resumo dos Itens</h3>
+                        <table width="100%" cellspacing="0" cellpadding="10" style="border-collapse: collapse;">
+                            <thead>
+                            <tr style="background-color: #eee; text-align: left;">
+                                <th style="font-size: 12px; color: #555;">PRODUTO (SKU)</th>
+                                <th style="font-size: 12px; color: #555; text-align: center;">QTD</th>
+                                <th style="font-size: 12px; color: #555; text-align: right;">UNITÁRIO</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="item : ${items}" class="item-row" style="border-bottom: 1px solid #eee;">
+                                <td style="font-size: 14px; color: #333;" th:text="${item.sku}">Notebook Gamer</td>
+                                <td style="font-size: 14px; color: #333; text-align: center;" th:text="${item.quantity}">1</td>
+                                <td style="font-size: 14px; color: #333; text-align: right;"
+                                    th:text="${'R$ ' + item.unitPrice}">R$ 5000.00</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <div style="margin-top: 40px; text-align: center;">
+                            <a href="#" style="background-color: #48bb78; color: #ffffff; padding: 14px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Ver Detalhes do Pedido</a>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #f4f4f7; padding: 20px; text-align: center; color: #888; font-size: 12px;">
+                        <p>Obrigado por comprar na CarlDev Shop!</p>
+                    </td>
+                </tr>
+            </table>
+
+        </td>
+    </tr>
+</table>
+</body>
+</html>
