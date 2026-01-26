@@ -2,7 +2,6 @@ package com.carldev.order_service.service;
 
 import com.carldev.order_service.dto.request.AddItemRequestDTO;
 import com.carldev.order_service.dto.request.CheckoutCreate;
-import com.carldev.order_service.dto.request.OrderStatusItem;
 import com.carldev.order_service.dto.request.PaymentSuccessConsumer;
 import com.carldev.order_service.dto.response.DeletePaymentResponseDTO;
 import com.carldev.order_service.dto.response.OrderStatusResponseDTO;
@@ -26,7 +25,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service
@@ -63,6 +66,7 @@ public class OrderService {
             return;
         }
 
+
         PaymentSuccessEvent paymentSuccess = new PaymentSuccessEvent(
                 orderPayment.getUserId(),
                 orderPayment.getUserName(),
@@ -71,7 +75,7 @@ public class OrderService {
                 orderPayment.getTotalAmount().toString(),
                 paymentSuccessConsumer.paymentMethod(),
                 paymentSuccessConsumer.cardLast4(),
-                orderPayment.getUpdateAt().toString(),
+                paymentSuccessConsumer.paidAt(),
                 paymentSuccessConsumer.items()
         );
 
@@ -131,16 +135,24 @@ public class OrderService {
         }
 
         order.setStatus(orderStatus);
+        Instant Date = Instant.now();
+
         order.setUpdateAt(LocalDateTime.now());
 
+        ZoneId brZone = ZoneId.of("America/Sao_Paulo");
+        ZonedDateTime brTime = ZonedDateTime.ofInstant(Date, brZone);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        String formattedTime = brTime.format(formatter);
+
         OrderChangeEvent orderChangeEvent = new OrderChangeEvent(
-            order.getUserId(),
-            order.getEmail(),
-            order.getUserName(),
-            order.getOrderNumber(),
-            order.getTotalAmount(),
-            order.getStatus(),
-            order.getUpdateAt().toString()
+                order.getUserId(),
+                order.getEmail(),
+                order.getUserName(),
+                order.getOrderNumber(),
+                order.getTotalAmount(),
+                order.getStatus(),
+                formattedTime
         );
 
         eventPublisher.publishEvent(orderChangeEvent);

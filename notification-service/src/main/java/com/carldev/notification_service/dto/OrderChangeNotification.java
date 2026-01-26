@@ -1,19 +1,15 @@
-package com.carldev.order_service.kafka.producer;
-
-import com.carldev.order_service.util.OrderStatus;
+package com.carldev.notification_service.dto;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record OrderChangeEvent(
+public record OrderChangeNotification(
         UUID orderId,
         String userEmail,
         String userName,
         long orderNumber,
         BigDecimal totalAmount,
-        OrderStatus status,
+        String status,
         String updateAt
-
 ) {
-
 }
