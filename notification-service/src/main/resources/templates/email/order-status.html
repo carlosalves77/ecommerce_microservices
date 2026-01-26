@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Atualização do Pedido</title>
+    <style>
+        /* Reset básico para garantir compatibilidade */
+        body { margin: 0; padding: 0; background-color: #f4f4f7; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; color: #555; }
+        table { border-collapse: collapse; width: 100%; }
+        /* Estilos responsivos */
+        @media only screen and (max-width: 600px) {
+            .email-container { width: 100% !important; }
+            .content-cell { padding: 20px !important; }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f4f7;">
+
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td style="padding: 20px 0 20px 0;" align="center">
+
+            <table class="email-container" role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+
+                <tr>
+                    <td style="background-color: #2d3748; padding: 30px; text-align: center;">
+                        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">CarlDev Shop</h1>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="content-cell" style="padding: 40px;">
+                        <h2 style="color: #333333; margin-top: 0; font-size: 20px;">Olá, <span th:text="${userName}">Cliente</span>!</h2>
+
+                        <p style="font-size: 16px; color: #555555;">
+                            Temos novidades sobre sua compra. O status do seu pedido foi atualizado recentemente.
+                        </p>
+
+                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 30px 0;">
+                            <tr>
+                                <td align="center">
+                                    <div style="background-color: #e6fffa; border: 1px solid #b2f5ea; border-radius: 6px; padding: 15px 25px; display: inline-block;">
+                                            <span style="color: #2c7a7b; font-weight: bold; font-size: 18px; text-transform: uppercase; letter-spacing: 1px;"
+                                                  th:text="${status}">ENVIADO</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid #eeeeee; margin-top: 20px;">
+                            <tr>
+                                <td style="padding: 15px 0; border-bottom: 1px solid #eeeeee; color: #555;">
+                                    <strong>Número do Pedido:</strong>
+                                </td>
+                                <td style="padding: 15px 0; border-bottom: 1px solid #eeeeee; text-align: right; color: #333;" th:text="${'#' + orderNumber}">
+                                    #123456
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 15px 0; border-bottom: 1px solid #eeeeee; color: #555;">
+                                    <strong>Data da Atualização:</strong>
+                                </td>
+                                <td style="padding: 15px 0; border-bottom: 1px solid #eeeeee; text-align: right; color: #333;" th:text="${updateAt}">
+                                    25/01/2026 14:30
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 15px 0; border-bottom: 1px solid #eeeeee; color: #555;">
+                                    <strong>Valor Total:</strong>
+                                </td>
+                                <td style="padding: 15px 0; border-bottom: 1px solid #eeeeee; text-align: right; color: #333; font-weight: bold; font-size: 16px;">
+                                    <span th:text="${'R$ ' + #numbers.formatDecimal(totalAmount, 1, 'POINT', 2, 'COMMA')}">R$ 1.250,00</span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div style="margin-top: 35px; text-align: center;">
+                            <a th:href="@{'http://seusite.com/pedidos/' + ${orderId}}"
+                               style="background-color: #3182ce; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                                Acompanhar Pedido
+                            </a>
+                        </div>
+
+                        <p style="margin-top: 30px; font-size: 13px; color: #999;">
+                            Se você não reconhece esta compra, entre em contato conosco imediatamente.
+                        </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #f4f4f7; padding: 20px; text-align: center; font-size: 12px; color: #888;">
+                        <p style="margin: 0;">&copy; 2026 CarlDev E-commerce. Todos os direitos reservados.</p>
+                        <p style="margin: 5px 0;">Jaboatão dos Guararapes, PE, Brasil</p>
+                    </td>
+                </tr>
+            </table>
+
+        </td>
+    </tr>
+</table>
+</body>
+</html>
