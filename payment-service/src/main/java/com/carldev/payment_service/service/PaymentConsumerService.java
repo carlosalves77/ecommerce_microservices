@@ -35,6 +35,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -298,6 +301,15 @@ public class PaymentConsumerService {
                     }
             );
 
+            Instant instant = Instant.now();
+
+            ZoneId brZone = ZoneId.of("America/Sao_Paulo");
+            ZonedDateTime brtime = ZonedDateTime.ofInstant(instant, brZone);
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            String formattedTime = brtime.format(formatter);
+
+
             PaymentSuccessEvent event = new PaymentSuccessEvent(
                     payment.getUserId(),
                     payment.getEmail(),
@@ -307,7 +319,7 @@ public class PaymentConsumerService {
                     paymentIntent.getCurrency(),
                     paymentMethodType,
                     last4,
-                    String.valueOf(Instant.now()),
+                    formattedTime,
                     listOfItems
             );
 
