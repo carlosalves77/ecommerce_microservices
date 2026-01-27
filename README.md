@@ -336,4 +336,97 @@ docker-compose up --build -d
 
 ---
 
+### Order Service
+
+Responsável pelo ciclo de vida completo dos pedidos, desde a materialização do checkout até a entrega. Este serviço atua como um hub centralizador, transformando a intenção de compra
+
+#### Arquitetura e Fluxo de Dados
+
+O serviço adota uma arquitetura híbrida:
+
+1. Assíncrona (Kafka): Para alta vazão na criação de pedidos e processamento de confirmações de pagamento.
+
+2. Síncrona (Feign): Para garantir a integridade do inventário no momento exato da criação do pedido.
+
+#### Funcionalidades Principais
+
+• Criação via Evento: Consome o tópico checkout-create para gerar novos pedidos com status inicial PENDING.
+
+• Reserva de Estoque (Síncrono): Durante a criação, comunica-se diretamente com o Product Catalog Service para debitar a quantidade de itens. Se o estoque falhar, o pedido não é processado.
+
+• Persistência Relacional: Salva os detalhes do pedido e itens em banco de dados PostgreSQL.
+
+#### Gestão de Pagamentos e Estados
+
+• Consome o tópico payment-success. Ao receber a confirmação, atualiza o status para PAID e registra a data/hora da transação.
+
+• Controla as transições de status (ex: impede alteração de pedidos CANCELLED) e publica eventos de mudança para notificar o cliente.
+
+#### Notificações e Integração
+
+• PaymentSuccessEvent: Disparado após confirmação do pagamento para envio de Email
+
+• OrderChangeEvent: Disparado a cada mudança de status manual ou automática (para atualização de tracking).
+
+#### Eventos e Integração
+
+O serviço interage intensamente com o ecossistema:
+
+1. Inputs (Kafka Consumers):
+
+• checkout-create: Payload vindo do Shopping Cart Service.
+
+• payment-success: Payload vindo do Payment Gateway/Service.
+
+
+2. Outputs (Kafka Producers):
+
+• OrderChangeEvent: Notifica o Notification Service sobre o andamento do pedido.
+
+3. Dependência Direta (Feign):
+
+• ProductCatalogClient: Realiza o débito físico do inventário .
+
+
+#### Tecnologias Utilizadas
+
+• Java 17 & Spring Boot 3
+
+• Spring Cloud OpenFeign: Comunicação HTTP síncrona.
+
+• Spring Kafka: Consumo e produção de mensagens.
+
+• PostgreSQL 16: Banco de dados relacional para persistência de pedidos.
+
+• Docker: Containerização. 
+
+#### Configuração e Execução
+
+Variáveis de Ambiente (.env)
+
+O serviço depende das seguintes variáveis para funcionar corretamente via Docker Compose:
+
+Variável,Descrição,Exemplo
+
+ ```
+
+SPRING_USER = <nome_do_usuario_igual_do_banco>
+SPRING_PASSWORD = <senha_do_usuario_igual_do_banco>
+
+POSTGRES_USER = <nome_usuario_do_banco>
+POSTGRES_PASSWORD = <senha_do_banco>
+POSTGRES_DB = <nome_do_banco>
+
+```
+#### Executando com Docker
+
+```
+
+docker-compose up --build -d
+
+```
+
+---
+
+
 
