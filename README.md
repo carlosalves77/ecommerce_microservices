@@ -177,12 +177,156 @@ SPRING_PASSWORD = <senha_do_usuario_igual_do_banco>
 POSTGRES_USER = <nome_usuario_do_banco>
 POSTGRES_PASSWORD = <senha_do_banco>
 POSTGRES_DB = <nome_do_banco>
-JWT_SECRET = <minha_chave_super_secreta_256bit>
+JWT_SECRET = <chave_secreta_256bit>
 
 ```
 #### Executando com Docker
 
 O serviço roda na porta 4005 e possui dependência direta do container postgres_auth.
+
+```
+
+docker-compose up --build -d
+
+```
+
+---
+
+### Product Catalog Service
+
+Responsável pela gestão centralizada do catálogo de produtos, organização de categorias e controle de disponibilidade de estoque. Este serviço atua como a fonte da verdade para dados de produtos e garante a integridade do estoque durante o ciclo de vida dos pedidos.
+
+### Funcionalidades Principais
+
+#### Gestão de Produtos e Estoque
+
+• CRUD de Produtos: Criação e edição com validação de unicidade de SKU
+
+• Inicialização de Inventário: Criação automática de registro de estoque ao cadastrar um novo produto.
+
+• Reserva e Débito: Lógica transacional para verificação e baixa de estoque.
+
+• Rollback de Estoque: Mecanismo de compensação para devolver itens ao estoque disponível em caso de falhas externas.
+
+• Consultas Otimizadas: Listagem paginada e busca textual por Nome ou SKU
+
+#### Gestão de Categorias
+
+• Organização Taxonômica: Criação e manutenção de categorias para agrupamento de produtos.
+
+• Validação de Slug: Garantia de URLs amigáveis e únicas através da verificação de slugs.
+
+• Associação: Vínculo de múltiplas categorias a um único produto.
+
+#### Tecnologias Utilizadas
+
+• Java 17 Spring Boot 3.
+
+• JPA / Hibernate: ORM para interação com banco de dados.
+
+• PostgreSQL 16: Banco de dados relacional.
+
+• Lombok: Redução de boilerplate code.
+
+• MapStruct: Mapeamento eficiente entre DTOs e Entidades.
+
+• Docker: Containerização.
+
+#### Configuração e Execução
+
+Variáveis de Ambiente (.env)
+
+O serviço depende das seguintes variáveis para funcionar corretamente via Docker Compose:
+
+Variável,Descrição,Exemplo
+
+ ```
+
+SPRING_USER = <nome_do_usuario_igual_do_banco>
+SPRING_PASSWORD = <senha_do_usuario_igual_do_banco>
+
+POSTGRES_USER = <nome_usuario_do_banco>
+POSTGRES_PASSWORD = <senha_do_banco>
+POSTGRES_DB = <nome_do_banco>
+JWT_SECRET = <chave_secreta_256bit>
+
+```
+#### Executando com Docker
+
+```
+
+docker-compose up --build -d
+
+```
+
+---
+
+### Shopping Cart Service
+
+Responsável pelo gerenciamento temporário da intenção de compra do usuário. Este serviço prioriza a baixa latência utilizando armazenamento em memória (Redis) validando a disponibilidade de estoque em tempo real antes de iniciar o processo de checkout.
+
+
+#### Arquitetura e Fluxo de Dados
+
+O serviço opera com persistência volátil (Redis) para garantir rapidez nas operações de escrita e leitura do carrinho. Comunica-se de forma síncrona com o Product Catalog Service para validações de estoque e dispara eventos assíncronos para iniciar o fluxo de pedidos.
+
+### Funcionalidades Principais
+
+#### Gerenciamento de Carrinho (Redis)
+
+• Adição de Itens: Inserção de produtos vinculados ao userId extraído do token JWT.
+
+• Atualização de Quantidade: Incremento ou decremento de itens com recálculo automático do valor total.
+
+• Persistência Rápida: Utiliza Redis (Key-Value Store) para armazenar o estado do carrinho, evitando carga desnecessária no banco relacional.
+
+#### Validação e Integração
+
+• Checagem de Estoque (Síncrono): Utiliza OpenFeign para consultar o Product Catalog Service, impedindo a adição de itens com quantidade superior ao estoque disponível.
+
+• Segurança: Extração automática de claims do JWT (userId, userName) para garantir que o usuário manipule apenas seu próprio carrinho.
+
+#### Checkout e Processamento
+
+• Geração de ID de Pedido: Utiliza TSID (Time-Sorted Unique Identifier) para gerar identificadores de pedidos performáticos e ordenáveis.
+
+• Disparo de Evento: Ao finalizar o carrinho, publica o evento CheckOutCreatedEvent, limpando o carrinho no Redis e enviando os dados para processamento no Kafka.
+
+#### Eventos e Integração
+
+1. ProductCatalogClient (Feign): Valida a existência do SKU e a quantidade em estoque (Request/Response).
+
+2. CheckOutCreatedEvent (Kafka): Evento disparado contendo o payload do pedido para ser consumido pelo Order Service.
+
+#### Tecnologias Utilizadas
+
+• Java 17 & Spring Boot 3
+
+• Spring Data Redis: Persistência em memória de alta performance.
+
+• Spring Cloud OpenFeign: Cliente HTTP declarativo para comunicação entre microsserviços.
+
+• Apache Kafka: Producer de mensagens para o fluxo de checkout.
+
+• TSID: Geração de IDs únicos distribuídos.
+
+• Docker: Containerização. 
+
+
+#### Configuração e Execução
+
+Variáveis de Ambiente (.env)
+
+O serviço depende das seguintes variáveis para funcionar corretamente via Docker Compose:
+
+Variável,Descrição,Exemplo
+
+ ```
+
+JWT_SECRET_KEY = <chave_secreta_256bit>
+
+```
+#### Executando com Docker
 
 ```
 
