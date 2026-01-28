@@ -78,7 +78,7 @@ public class UserAuthService {
         }
 
         UserAuth userAuth = authRegisterMapper.toEntity(authRegisterRequestDTO);
-
+        
         String encodePassword = passwordEncoder.encode(authRegisterRequestDTO.password());
         userAuth.setPassword(encodePassword);
         userAuth.setIsVerified(false);
@@ -91,9 +91,8 @@ public class UserAuthService {
                 "?token=" + verificationToken.getToken();
 
 
-        CreateAccountValidationEvent accountValidationEvent =
-                CreateAccountValidationEvent
-                        .fromEntity(verificationLink, saveUserAuth.getUsername(), saveUserAuth.getEmail());
+        CreateAccountValidationEvent accountValidationEvent = new CreateAccountValidationEvent
+                        (verificationLink, saveUserAuth.getUsername(), saveUserAuth.getEmail());
 
         applicationEventPublisher.publishEvent(accountValidationEvent);
 
@@ -138,8 +137,9 @@ public class UserAuthService {
             resetToken.setUserAuth(userAuth);
             resetToken.setExpiresAt(LocalDateTime.now().plusMinutes(30));
 
-            ResetPasswordEvent resetPasswordEvent = ResetPasswordEvent.fromEntity(
-                    resetToken.getToken(), userAuth.getUsername());
+            ResetPasswordEvent resetPasswordEvent = new ResetPasswordEvent(
+                    resetToken.getToken(), userAuth.getUsername(), userAuth.getEmail()
+            );
 
             applicationEventPublisher.publishEvent(resetPasswordEvent);
 
