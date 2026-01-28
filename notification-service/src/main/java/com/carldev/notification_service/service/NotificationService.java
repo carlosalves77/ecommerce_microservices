@@ -3,6 +3,7 @@ package com.carldev.notification_service.service;
 import com.carldev.notification_service.dto.CreateAccountValidationEvent;
 import com.carldev.notification_service.dto.OrderChangeNotification;
 import com.carldev.notification_service.dto.PaymentSuccessConsumer;
+import com.carldev.notification_service.dto.ResetPasswordConsumer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mailtrap.client.MailtrapClient;
@@ -61,7 +62,7 @@ public class NotificationService {
             String htmlBody = templateEngine.process("email/payment-success", context);
 
             final MailtrapMail mail = MailtrapMail.builder()
-                    .from(new Address("mailtrap@demomailtrap.co", "CarlDev Shop"))
+                    .from(new Address("hello@carldev.online", "CarlDev Shop"))
                     .to(List.of(new Address(paymentSuccessConsumer.userEmail())))
                     .subject("Pagamento Aprovado: Pedido #" + paymentSuccessConsumer.orderNumber())
                     .html(htmlBody)
@@ -92,7 +93,7 @@ public class NotificationService {
                     "do cadastro: " + createAccountValidationEvent.accountValidation();
 
             final MailtrapMail mail = MailtrapMail.builder()
-                    .from(new Address("hello@demomailtrap.co", "Mailtrap Test"))
+                    .from(new Address("hello@carldev.online", "Mailtrap Test"))
                     .to(List.of(new Address(createAccountValidationEvent.email())))
                     .subject("Confirmação de conta")
                     .text(msg)
@@ -129,13 +130,50 @@ public class NotificationService {
 
         try {
             MailtrapMail mail = MailtrapMail.builder()
-                    .from(new Address("hello@demomailtrap.co", "CarlDev Shop"))
+                    .from(new Address("hello@carldev.online", "CarlDev Shop"))
                     .to(List.of(new Address(orderChangeNotification.userEmail())))
                     .subject("Atualização do Pedido #" + orderChangeNotification.orderNumber())
                     .html(htmlBody)
                     .text("Seu pedido #" + orderChangeNotification.orderNumber() + " foi atualizado para: "
                             + orderChangeNotification.status())
                     .category("Order Notification")
+                    .build();
+
+            try {
+                client.send(mail);
+            } catch (Exception e) {
+                log.error("Exception ao tentar enviar e-mail de order status{}", e.getMessage());
+
+            }
+
+        } catch (Exception e) {
+            log.error("Exception try catch na alteração do pagamento {}", e.getMessage());
+        }
+
+
+    }
+
+    @KafkaListener(topics = "auth-reset-password", groupId = "notification-auth-group")
+    public void handleResetPasswordToken(String messageJson) throws JsonProcessingException {
+
+        ResetPasswordConsumer resetPasswordConsumer = objectMapper.readValue(messageJson,
+                ResetPasswordConsumer.class);
+        Context context = new Context();
+        context.setVariable("passwordToken", resetPasswordConsumer.passwordToken());
+        context.setVariable("username", resetPasswordConsumer.username());
+
+
+        String htmlBody = templateEngine.process("email/reset-password", context);
+
+        try {
+            MailtrapMail mail = MailtrapMail.builder()
+                    .from(new Address("hello@carldev.online", "CarlDev Shop"))
+                    .to(List.of(new Address(resetPasswordConsumer.userEmail())))
+                    .subject("Redefinição de senha")
+                    .html(htmlBody)
+                    .text("Olá " + resetPasswordConsumer.username() + ". Seu token de redefinição é: "
+                    + resetPasswordConsumer.passwordToken())
+                    .category("Password Reset")
                     .build();
 
             try {
