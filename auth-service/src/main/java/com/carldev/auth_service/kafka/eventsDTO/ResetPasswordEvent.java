@@ -3,12 +3,9 @@ package com.carldev.auth_service.kafka.eventsDTO;
 
 public record ResetPasswordEvent(
         String passwordToken,
-        String username
+        String username,
+        String userEmail
 ) {
 
-    public static ResetPasswordEvent fromEntity(String passwordToken, String username) {
-        return new ResetPasswordEvent(
-             passwordToken, username
-        );
-    }
 }
+
