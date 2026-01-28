@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class KafkaResetPasswordProducer {
 
-    private static final String TOPIC = "auth-reset-password-producer";
+    private static final String TOPIC = "auth-reset-password";
     private final KafkaTemplate<String, ResetPasswordEvent> kafkaTemplate;
 
     public KafkaResetPasswordProducer(KafkaTemplate<String, ResetPasswordEvent> kafkaTemplate) {
@@ -19,7 +19,7 @@ public class KafkaResetPasswordProducer {
 
     @EventListener
     public void handleResetPasswordEvent(ResetPasswordEvent passwordEvent) {
-        kafkaTemplate.send(TOPIC, passwordEvent.username(), passwordEvent);
+        kafkaTemplate.send(TOPIC, "Reset Password Token", passwordEvent);
 
     }
 }

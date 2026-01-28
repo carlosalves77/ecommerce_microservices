@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class KafkaCreateAccountValidationProducer {
 
-    private static final String TOPIC = "auth-producer";
+    private static final String TOPIC = "create-account";
     private final KafkaTemplate<String, CreateAccountValidationEvent> kafkaTemplate;
 
     public KafkaCreateAccountValidationProducer(KafkaTemplate<String, CreateAccountValidationEvent> kafkaTemplate) {
@@ -21,7 +21,7 @@ public class KafkaCreateAccountValidationProducer {
 
     @EventListener
     public void handleCreateAccountValidationEvent(CreateAccountValidationEvent createAccountValidationEvent) {
-        kafkaTemplate.send(TOPIC, createAccountValidationEvent.userName(), createAccountValidationEvent);
+        kafkaTemplate.send(TOPIC, "Confirm account", createAccountValidationEvent);
 
     }
 }
