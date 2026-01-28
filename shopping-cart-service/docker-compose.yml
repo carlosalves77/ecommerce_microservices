@@ -7,11 +7,8 @@ services:
     container_name: shopping-cart-service
     environment:
       - SERVER_PORT=4006
-      - SPRING_REDIS_HOST=redis
-      - SPRING_REDIS_PORT=6379
       - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,prometheus
       - MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED=true
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:19092
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     ports:
       - "4006"
