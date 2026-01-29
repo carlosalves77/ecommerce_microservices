@@ -29,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -100,7 +101,8 @@ public class UserAuthService {
     }
 
 
-    public AuthLoginResponseDTO loginUser(AuthLoginRequestDTO requestDTO) {
+    public AuthLoginResponseDTO loginUser(AuthLoginRequestDTO requestDTO)  {
+
 
         try {
             UsernamePasswordAuthenticationToken userPass =
@@ -118,8 +120,8 @@ public class UserAuthService {
             String token = tokenConfig.generateToken(userAuth);
 
             return new AuthLoginResponseDTO(userAuth.getUsername(), token);
-        } catch (BadCredentialsException ex) {
-            throw new BadCredentialsException(ex.getMessage());
+        } catch (AuthenticationException e) {
+            throw new BadCredentialsException("Credenciais Inválidas");
         }
 
     }

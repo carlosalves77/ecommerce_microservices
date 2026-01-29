@@ -151,7 +151,7 @@ class UserAuthServiceTest {
                 .thenReturn(authMock);
         when(authMock.getPrincipal()).thenReturn(saveUserAuth);
         when(tokenConfig.generateToken(saveUserAuth)).thenReturn("token.jwt.falso");
-        when(CreateAccountValidationEvent.fromEntity(
+        when(new CreateAccountValidationEvent(
                 accountValidationEvent.accountValidation(),
                 accountValidationEvent.userName(),
                 accountValidationEvent.email()

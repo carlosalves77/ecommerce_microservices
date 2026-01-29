@@ -1,10 +1,12 @@
 package com.carldev.product_catalog_service.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,38 +26,50 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(SkuAlreadyExistsException.class)
-    public ResponseEntity<Map<String, String>> handleIfSkuAlreadyExists(SkuAlreadyExistsException ex) {
+    public ResponseEntity<ErrorResponseDTO> handleIfSkuAlreadyExists(SkuAlreadyExistsException ex) {
 
-        Map<String, String> erros = new HashMap<>();
-        erros.put("message: ", ex.getMessage());
+        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
 
-        return ResponseEntity.badRequest().body(erros);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDTO);
     }
 
     @ExceptionHandler(ProductIdNotExistsException.class)
-    public ResponseEntity<Map<String, String>> handleIfIdNotExists(ProductIdNotExistsException ex) {
+    public ResponseEntity<ErrorResponseDTO> handleIfIdNotExists(ProductIdNotExistsException ex) {
 
-        Map<String, String> erros = new HashMap<>();
-        erros.put("message: ", ex.getMessage());
+        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
 
-        return ResponseEntity.badRequest().body(erros);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDTO);
     }
 
     @ExceptionHandler(InvalidUpdateRequestException.class)
-    public ResponseEntity<Map<String, String>> handleIfInvalidUpdateExists(InvalidUpdateRequestException ex) {
+    public ResponseEntity<ErrorResponseDTO> handleIfInvalidUpdateExists(InvalidUpdateRequestException ex) {
 
-        Map<String, String> erros = new HashMap<>();
-        erros.put("message: ", ex.getMessage());
-
-        return ResponseEntity.badRequest().body(erros);
+        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDTO);
     }
 
     @ExceptionHandler(SlugAlreadyExistsException.class)
-    public ResponseEntity<Map<String, String>> handleIfSlugAlreadyExists(SlugAlreadyExistsException ex) {
-        Map<String, String> erros = new HashMap<>();
-        erros.put("message", ex.getMessage());
+    public ResponseEntity<ErrorResponseDTO> handleIfSlugAlreadyExists(SlugAlreadyExistsException ex) {
 
-        return ResponseEntity.badRequest().body(erros);
+        ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDTO);
     }
 
 }
