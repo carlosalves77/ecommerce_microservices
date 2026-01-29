@@ -7,6 +7,7 @@
 ![Postgres](https://img.shields.io/badge/PostgreSQL-Database-336791?style=for-the-badge&logo=postgresql)
 ![Redis](https://img.shields.io/badge/Redis-Cache-red?style=for-the-badge&logo=redis)
 
+
 Sistema robusto de microsserviços para e-commerce, desenvolvido com foco em escalabilidade, segurança e alta performance. O projeto orquestra serviços independentes para gestão de catálogo, autenticação segura, carrinho de compras de alta velocidade e processamento assíncrono de pagamentos.
 
 ---
@@ -567,5 +568,163 @@ STRIPE_API_KEY= = <senha_stipe_api>
 docker-compose up --build -d
 
 ```
+
+---
+
+### Notification Service
+
+Responsável por centralizar toda a comunicação transacional da plataforma. Este serviço atua como a "voz" do ecossistema, escutando eventos de negócio (pagamentos, pedidos, segurança) e transformando-os em e-mails formatados e personalizados para o usuário final.
+
+#### Arquitetura e Fluxo de Dados
+
+O serviço segue uma arquitetura puramente Event-Driven (Orientada a Eventos), garantindo que o envio de e-mails não bloqueie os fluxos críticos de compra ou autenticação.
+
+1. Consumo Assíncrono (Kafka): O serviço não possui APIs REST de entrada. Ele reage passivamente a mensagens publicadas por outros microsserviços.
+
+2. Renderização de Templates (Thymeleaf): Utiliza motor de templates para gerar HTMLs dinâmicos, injetando dados do evento (nome, valor, itens) em layouts de e-mail profissionais.
+
+3. Delivery (Mailtrap): Delega o envio real para o provedor Mailtrap, ideal para ambientes de desenvolvimento e teste (Sandbox de e-mail).
+
+#### Funcionalidades Principais
+
+O serviço gerencia quatro tipos principais de comunicação:
+
+• Recibo de Pagamento (Payment Success):
+
+  • Gera um comprovante detalhado com lista de itens, método de pagamento (cartão/pix), últimos 4 dígitos e data da transação.
+
+• Acompanhamento de Pedido (Order Tracking):
+ 
+ • Notifica o usuário a cada mudança de status (ex: PENDING -> PAID -> SHIPPED), mantendo o cliente informado sobre a entrega.
+
+• Boas-vindas e Validação (Account Validation): 
+
+ • Envia links de confirmação de cadastro para novos usuários.
+
+• Segurança (Password Reset):
+
+ •  Envia tokens seguros para redefinição de senha quando solicitado pelo Identity Service.
+
+
+#### Tecnologias Utilizadas
+
+• Java 17 & Spring Boot 3
+
+• Spring Kafka: Para orquestração das mensagens.
+
+• Spring Kafka: Consumo e produção de mensagens.
+
+• Thymeleaf: Motor de templates server-side para gerar o HTML dos e-mails.
+
+• Mailtrap Java Client: SDK oficial para integração com o serviço de e-mail.
+
+• Docker: Containerização.
+
+#### Configuração do Mailtrap (Obrigatório)
+
+Este serviço utiliza o Mailtrap para simular o envio de e-mails sem precisar de um servidor SMTP real. Para que o serviço inicie sem erros, você precisa de uma API Key.
+
+1. Crie uma conta em ![Mail Trap](https://mailtrap.io/).
+
+2. No painel, navegue até Sending > Domains (ou use a Sandbox se preferir testes de captura).
+
+3. Vá em Settings > API Tokens.
+
+4. Gere um novo token com permissão de envio.
+
+5. Adicione este token ao seu arquivo .env ou variáveis de ambiente.
+
+Variáveis de Ambiente (.env)
+
+O serviço depende das seguintes variáveis para funcionar corretamente via Docker Compose:
+
+Variável,Descrição,Exemplo
+
+ ```
+
+MAILTRAP_KEY= = <senha_mailtrap_key>
+
+```
+#### Executando com Docker
+
+```
+
+docker-compose up --build -d
+
+```
+
+---
+
+## Infraestrutura Core & Observabilidade
+
+Este módulo é responsável por sustentar a comunicação assíncrona entre os microsserviços e prover visibilidade sobre a saúde do sistema.
+
+#### 1. Apache Kafka (Modo KRaft)
+
+Utilizamos a versão mais moderna do Kafka, configurada no modo KRaft (Kafka Raft Metadata mode), eliminando a dependência do Zookeeper. Isso simplifica a arquitetura e reduz o consumo de recursos.
+
+#### Destaques da Configuração:
+
+• Roles Híbridas: O nó atua simultaneamente como broker e controller.
+
+• Dual Listeners (Rede): Configuração crucial para funcionamento híbrido (Docker e Host):
+
+ • INTERNAL (Porta 19092): Usada exclusivamente para comunicação entre os containers (microsserviços conversando com o Kafka). 
+
+ • CLIENT (Porta 9092): Exposta para a máquina host. Permite que você rode aplicações ou ferramentas de depuração fora do Docker conectando-se ao localhost:9092.
+
+ • Auto-Create Topics: Habilitado para facilitar o desenvolvimento (KAFKA_AUTO_CREATE_TOPICS_ENABLE=true). Tópicos são criados automaticamente ao serem acessados pela primeira vez.
+
+ #### 2. Kafka UI
+
+ Interface gráfica para gerenciamento do cluster Kafka.
+
+  • Permite visualizar tópicos, partições, offsets e mensagens em tempo real.
+
+  • Configurada para se conectar automaticamente ao cluster interno via kafka:19092. 
+
+#### 3. Pilha de Observabilidade (Prometheus & Grafana)
+
+Monitoramento centralizado para coletar métricas de performance da JVM, do Spring Boot e do próprio Kafka.
+
+• Prometheus: Banco de dados de séries temporais. Ele "raspa" (scrapes) as métricas expostas pelos microsserviços (via endpoint /actuator/prometheus).
+
+• Requer o arquivo de configuração prometheus.yml na raiz para definir os alvos (targets).
+
+• Grafana: Plataforma de visualização. Conecta-se ao Prometheus para gerar dashboards gráficos sobre latência, requisições por segundo e erros.
+
+## Acesso aos Serviços de Infraestrutura
+
+Após subir o ambiente com docker-compose up, as seguintes ferramentas estarão disponíveis:
+
+### 🚀 Serviços Disponíveis
+
+| Serviço | URL de Acesso | Credenciais | Descrição |
+| :--- | :--- | :--- | :--- |
+| **Kafka (Host)** | `localhost:9092` | *N/A* | Endereço para conectar consumers/producers na IDE. |
+| **Kafka UI** | [http://localhost:8090](http://localhost:8090) | *N/A* | Dashboard visual do Kafka. |
+| **Prometheus** | [http://localhost:9090](http://localhost:9090) | *N/A* | Consulta crua de métricas (PromQL). |
+| **Grafana** | [http://localhost:3000](http://localhost:3000) | `admin` / `admin` | Dashboards visuais. |
+
+> [!WARNING]
+> **Configuração Crítica: Prometheus**
+> Para que o container suba corretamente, certifique-se de que o arquivo `prometheus.yml` existe na raiz do projeto.
+
+#### Executando a Infraestrutura
+
+Para subir apenas a infraestrutura (sem os microsserviços de negócio), você pode rodar:
+
+```
+
+docker-compose up -d kafka kafka-ui prometheus grafana
+
+
+```
+
+---
+
+###  Inspiração e Créditos
+
+Este projeto foi desenvolvido com base nas especificações de backend do [roadmap.sh - Scalable E-commerce Platform](https://roadmap.sh/projects/scalable-ecommerce-platform).
 
 
