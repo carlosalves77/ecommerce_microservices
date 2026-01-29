@@ -108,6 +108,10 @@ Serviço de Autenticação (auth-service) deve estar rodando para que a validaç
 
 ```
 
+# Criar rede (se não existir)
+docker network create internal
+
+# Subir aplicação
 docker-compose up --build -d
 
 ```
@@ -428,5 +432,140 @@ docker-compose up --build -d
 
 ---
 
+### Payment Service
+
+Responsável pelo processamento financeiro das transações do e-commerce. Este serviço atua como um intermediário seguro entre a plataforma e o gateway de pagamento (Stripe), garantindo a conciliação financeira e a atualização dos pedidos.
+
+#### Arquitetura e Fluxo de Dados
+
+1. Assíncrona (Kafka): Para a ingestão inicial de pedidos gerados pelo checkout, garantindo desacoplamento do Order Service
+
+2. Híbrida (Stripe API + Webhooks):
+
+• Síncrona: Criação da intenção de pagamento (PaymentIntent) junto ao Stripe.
+
+• Assíncrona: Confirmação final do status (Aprovado/Rejeitado) via Webhook seguro, garantindo que o status local reflita a realidade bancária.
+
+#### Funcionalidades Principais
+
+• Ingestão de Pedidos: Consome o tópico checkout-create. Ao receber um pedido, persiste os dados financeiros no banco local com status inicial PENDING, sem cobrar o cliente imediatamente.
+
+• Processamento de Pagamento (Stripe):
+
+ • Verifica se o cliente possui método de pagamento (cartão) salvo no Stripe.
+
+ • Gera um PaymentIntent com metadados do pedido (itens, IDs, usuário) para rastreabilidade no painel do Stripe.
+
+ • Executa a tentativa de cobrança (confirm).
+
+• Webhook Seguro: Endpoint dedicado para receber callbacks do Stripe.
+  
+ • Valida a assinatura digital (Stripe-Signature) para evitar fraudes.
+
+ • Trata eventos de sucesso (payment_intent.succeeded) e falha (payment_intent.payment_failed)
+
+• Consulta e Histórico: Permite a busca paginada de pagamentos realizados.
+
+#### Tecnologias Utilizadas
+
+• Java 17 & Spring Boot 3
+
+• Stripe Java SDK: Para comunicação com a API de pagamentos.
+
+• Spring Kafka: Consumo e produção de mensagens.
+
+• PostgreSQL 16: Banco de dados relacional para persistência de pedidos.
+
+• Docker: Containerização.
+
+
+#### Configuração e Execução
+
+
+Pré-requisitos do Stripe (Ambiente de Desenvolvimento)
+
+Para que o processamento de pagamentos e a confirmação via Webhook funcionem localmente, é necessário configurar o ambiente de Sandbox do Stripe e utilizar o CLI para tunelamento.
+
+#### 1. Criação de Conta e Chaves
+ 
+1. Crie uma conta gratuita no ![Stripe Dashboard](https://dashboard.stripe.com/register)
+
+2. No menu lateral, ative a opção "Test Mode" (Modo de Teste).
+
+3. Vá em Developers > API Keys.
+
+4. Copie a Secret Key (inicia com sk_test_...) e adicione ao seu arquivo .env na variável STRIPE_API_KEY.
+
+#### 2. Configurando o Webhook Local (Stripe CLI)
+
+O Stripe não consegue enviar requisições HTTP para o seu localhost diretamente. Para testar o fluxo completo (aprovação/rejeição), você deve usar o Stripe CLI.
+
+1. Instale o Stripe CLI:
+
+• ![Guia oficial de instalação](https://docs.stripe.com/stripe-cli)
+
+2. Autentique o CLI: Execute no terminal:
+
+```
+
+stripe login
+
+```
+
+3. Inicie o Listener (Tunelamento): O comando abaixo cria um túnel para redirecionar os eventos do Stripe para a sua aplicação rodando na porta 4007.
+
+Nota: Verifique no seu PaymentController qual é a rota exata que chama o método webhook. Abaixo assumimos /api/payment/webhook.
+
+```
+
+stripe listen --forward-to localhost:4007/api/payment/webhook
+
+```
+
+4. Obtenha o Segredo do Webhook: Assim que o comando acima iniciar, ele exibirá uma mensagem como:
+
+Ready! Your webhook signing secret is whsec_...
+
+Copie este código (inicia com whsec_) e adicione ao seu arquivo .env na variável WEBHOOK_SECRET_KEY.
+
+#### Como Testar o Fluxo
+
+Com o stripe listen rodando em um terminal separado:
+
+1. Faça uma requisição de checkout (via Order Service).
+
+2. O PaymentConsumerService criará o pagamento no Stripe.
+
+3. Você verá eventos aparecendo no terminal do Stripe CLI (payment_intent.created, etc.).
+
+4. Para simular um pagamento com sucesso, use os ![Cartão de Teste do Stripe](https://docs.stripe.com/testing) (ex: 4242 4242...)
+
+Variáveis de Ambiente (.env)
+
+O serviço depende das seguintes variáveis para funcionar corretamente via Docker Compose:
+
+Variável,Descrição,Exemplo
+
+ ```
+
+SPRING_USER = <nome_do_usuario_igual_do_banco>
+SPRING_PASSWORD = <senha_do_usuario_igual_do_banco>
+
+POSTGRES_USER = <nome_usuario_do_banco>
+POSTGRES_PASSWORD = <senha_do_banco>
+POSTGRES_DB = <nome_do_banco>
+
+WEBHOOK_SECRET_KEY = <senha_do_webhook>
+
+STRIPE_API_KEY= = <senha_stipe_api>
+
+```
+#### Executando com Docker
+
+```
+
+docker-compose up --build -d
+
+```
 
 
