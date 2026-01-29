@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,39 +15,36 @@ import java.util.Map;
 public class GlobalHandleException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<List<ErrorValidationExceptionDTO>> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
 
-        var errorResponse = ex.getBindingResult().getFieldErrors().stream().map(
-                erros -> new ErrorValidationExceptionDTO(
-                        HttpStatus.UNAUTHORIZED.value(),
-                        erros.getField(),
-                        erros.getDefaultMessage(),
-                        System.currentTimeMillis()
-                )
-        ).toList();
+        Map<String, String> errors = new HashMap<>();
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        ex.getBindingResult().getFieldErrors().forEach(fieldErrors ->
+                        errors.put(fieldErrors.getField(), fieldErrors.getDefaultMessage())
+                );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
     @ExceptionHandler(UserExistEmailException.class)
     public ResponseEntity<ErrorResponseDTO> handleExistsAlreadyEmail(UserExistEmailException ex) {
 
         ErrorResponseDTO responseDTO = new ErrorResponseDTO(
-                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.CONFLICT.value(),
                 ex.getMessage(),
-                System.currentTimeMillis()
+                LocalDateTime.now()
         );
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(responseDTO);
     }
 
     @ExceptionHandler(HandleIfInvalidTokenOrExpireException.class)
     public ResponseEntity<ErrorResponseDTO> HandleIfInvalidTokenOrExpireException(
             HandleIfInvalidTokenOrExpireException ex) {
 
-        ErrorResponseDTO responseDTO  = new ErrorResponseDTO(
+        ErrorResponseDTO responseDTO = new ErrorResponseDTO(
                 HttpStatus.UNAUTHORIZED.value(),
                 ex.getMessage(),
-                System.currentTimeMillis()
+                LocalDateTime.now()
         );
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
@@ -55,13 +53,13 @@ public class GlobalHandleException {
     @ExceptionHandler(HandleIfUserNotExistsException.class)
     public ResponseEntity<ErrorResponseDTO> handleIfUsernameNotExistsException(HandleIfUserNotExistsException ex) {
 
-      ErrorResponseDTO responseDTO = new ErrorResponseDTO(
-              HttpStatus.UNAUTHORIZED.value(),
-              ex.getMessage(),
-              System.currentTimeMillis()
-      );
+        ErrorResponseDTO responseDTO = new ErrorResponseDTO(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
     }
 
     @ExceptionHandler(UserIsAlreadyVerifiedException.class)
@@ -70,12 +68,12 @@ public class GlobalHandleException {
     ) {
 
         ErrorResponseDTO responseDTO = new ErrorResponseDTO(
-                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.CONFLICT.value(),
                 ex.getMessage(),
-                System.currentTimeMillis()
+                LocalDateTime.now()
         );
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(responseDTO);
     }
 
     @ExceptionHandler(UserIsNotVerifyAccountException.class)
@@ -86,7 +84,7 @@ public class GlobalHandleException {
         ErrorResponseDTO responseDTO = new ErrorResponseDTO(
                 HttpStatus.UNAUTHORIZED.value(),
                 ex.getMessage(),
-                System.currentTimeMillis()
+                LocalDateTime.now()
         );
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
@@ -98,7 +96,7 @@ public class GlobalHandleException {
         ErrorResponseDTO responseDTO = new ErrorResponseDTO(
                 HttpStatus.UNAUTHORIZED.value(),
                 ex.getMessage(),
-                System.currentTimeMillis()
+                LocalDateTime.now()
         );
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
     }
