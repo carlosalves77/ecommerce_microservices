@@ -489,7 +489,7 @@ Para que o processamento de pagamentos e a confirmação via Webhook funcionem l
 
 #### 1. Criação de Conta e Chaves
  
-1. Crie uma conta gratuita no ![Stripe Dashboard](https://dashboard.stripe.com/register)
+1. Crie uma conta gratuita no [Stripe Dashboard](https://dashboard.stripe.com/register)
 
 2. No menu lateral, ative a opção "Test Mode" (Modo de Teste).
 
@@ -503,7 +503,7 @@ O Stripe não consegue enviar requisições HTTP para o seu localhost diretament
 
 1. Instale o Stripe CLI:
 
-• ![Guia oficial de instalação](https://docs.stripe.com/stripe-cli)
+• [Guia oficial de instalação](https://docs.stripe.com/stripe-cli)
 
 2. Autentique o CLI: Execute no terminal:
 
@@ -539,7 +539,7 @@ Com o stripe listen rodando em um terminal separado:
 
 3. Você verá eventos aparecendo no terminal do Stripe CLI (payment_intent.created, etc.).
 
-4. Para simular um pagamento com sucesso, use os ![Cartão de Teste do Stripe](https://docs.stripe.com/testing) (ex: 4242 4242...)
+4. Para simular um pagamento com sucesso, use os [Cartão de Teste do Stripe](https://docs.stripe.com/testing) (ex: 4242 4242...)
 
 Variáveis de Ambiente (.env)
 
@@ -624,7 +624,7 @@ O serviço gerencia quatro tipos principais de comunicação:
 
 Este serviço utiliza o Mailtrap para simular o envio de e-mails sem precisar de um servidor SMTP real. Para que o serviço inicie sem erros, você precisa de uma API Key.
 
-1. Crie uma conta em ![Mail Trap](https://mailtrap.io/).
+1. Crie uma conta em [Mail Trap](https://mailtrap.io/).
 
 2. No painel, navegue até Sending > Domains (ou use a Sandbox se preferir testes de captura).
 
