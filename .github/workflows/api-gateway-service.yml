@@ -50,8 +50,4 @@ jobs:
           # Usa a versão extraída do POM ($PROJECT_VERSION)
           docker build -t ${{ secrets.DOCKER_USERNAME }}/api-gateway:$PROJECT_VERSION .
           docker push ${{ secrets.DOCKER_USERNAME }}/api-gateway:$PROJECT_VERSION
-      - name: Deploy no Kubernetes Local
-        run: |
-          echo "Atualizando K8s para versão: $PROJECT_VERSION"
-          kubectl set image deployment/api-gateway-deploy api-gateway-container=${{ secrets.DOCKER_USERNAME }}/api-gateway:$PROJECT_VERSION -n default
-          kubectl rollout restart deployment/api-gateway-deploy -n default
+ 
