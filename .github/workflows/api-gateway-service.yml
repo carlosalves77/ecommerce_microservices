@@ -57,7 +57,7 @@ jobs:
       - name: Atualizar Repositório de CD (GitOps)
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }} 
-          USER_EMAIL: "ci-bot@carlosaalves07@outlook.com"
+          USER_EMAIL: "ci-bot@outlook.com"
           USER_NAME: "CI Bot"
           CD_REPO: "carlosalves77/homelab-kubernetes" 
           FILE_PATH: "api-gateway-k8s/api-gateway-deploy.yaml"
@@ -66,13 +66,16 @@ jobs:
 
           git config --global --unset credential.helper || true
           
-          git clone https://x-access-token:${GH_TOKEN}@github.com/${CD_REPO}.git cd-repo
+          git clone https://${GH_TOKEN}@github.com/${CD_REPO}.git cd-repo
 
           cd cd-repo
           
           # Configurar Git
           git config user.name "$USER_NAME"
           git config user.email "$USER_EMAIL"
+
+          echo "Tentando editar: $FILE_PATH"
+          ls -la $FILE_PATH || echo "ERRO: Arquivo não encontrado!"
 
           sed -i "s|image: ${{ secrets.DOCKER_USERNAME }}/api-gateway:.*|image: ${{ secrets.DOCKER_USERNAME }}/api-gateway:$PROJECT_VERSION|" $FILE_PATH
 
