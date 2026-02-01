@@ -80,7 +80,7 @@ jobs:
           else
             echo "Mudança detectada. Commitando..."
             git add $FILE_PATH
-            git commit -m "Update api-gateway image to version $PROJECT_VERSION"
+            git commit -m "Update Notification Service image to version $PROJECT_VERSION"
             git push origin main 
             echo "Repositório de CD atualizado com sucesso!"
           fi
