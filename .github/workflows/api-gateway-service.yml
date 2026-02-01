@@ -64,10 +64,11 @@ jobs:
         run: |
           echo "Clonando repositório de CD..."
 
+          rm -rf cd-repo || true
           git config --global --unset credential.helper || true
           
           git clone https://${GH_TOKEN}@github.com/${CD_REPO}.git cd-repo
-
+          
           cd cd-repo
           
           # Configurar Git
