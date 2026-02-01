@@ -63,6 +63,9 @@ jobs:
           FILE_PATH: "api-gateway-k8s/api-gateway-deploy.yaml"
         run: |
           echo "Clonando repositório de CD..."
+
+          git config --global --unset credential.helper || true
+          
           git clone https://x-access-token:${GH_TOKEN}@github.com/${CD_REPO}.git cd-repo
 
           cd cd-repo
