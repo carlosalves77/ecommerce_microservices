@@ -26,14 +26,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/actuator/prometheus").permitAll()
-                )
-                .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/swagger-resources/**",
+                                "/actuator/prometheus",
                                 "/webjars/**").permitAll()
                 )
                 .sessionManagement(session -> session
@@ -51,6 +49,7 @@ public class SecurityConfig {
 
 
 
+    // Extrair dados do token JWT
     @Bean
     public JwtDecoder jwtDecoder() {
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
