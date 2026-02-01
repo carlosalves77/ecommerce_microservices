@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,6 +53,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(allProducts);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/payment/debit")
     public ResponseEntity<ProductResponseDTO> getDebitInventoryQuantity(
             @Valid
@@ -63,6 +65,7 @@ public class ProductController {
         return new ResponseEntity<>(productResponseDTO, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/payment/rollback")
     public ResponseEntity<ProductResponseDTO> getRollbackInventoryQuantity(
             @RequestBody

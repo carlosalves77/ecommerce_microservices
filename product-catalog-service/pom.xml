@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.carldev</groupId>
 	<artifactId>product-catalog-service</artifactId>
-	<version>0.0.5</version>
+	<version>0.0.7</version>
 	<name>product-catalog-service</name>
 
 	<description>Demo project for Spring Boot</description>
@@ -96,6 +96,12 @@
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.8.15</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+		</dependency>
+
 
 	</dependencies>
 

@@ -1,4 +1,4 @@
-package com.carldev.shopping_cart_service.config;
+package com.carldev.product_catalog_service.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +10,6 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -20,40 +19,39 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
     @Value("${spring.security.oauth2.resourceserver.jwt.secret-key}")
-    private String secretKey;
+    private String jwtSecretKey;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/swagger-resources/**",
-                                "/actuator/prometheus",
-                                "/webjars/**").permitAll()
-                )
-                .sessionManagement(session -> session
+        http.
+                authorizeHttpRequests(
+                        auth ->
+                                auth.requestMatchers(
+                                        "/v3/api-docs/**",
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html",
+                                        "/swagger-resources/**",
+                                        "/actuator/prometheus",
+                                        "/webjars/**"
+                                ).permitAll()
+
+                ).sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().authenticated()
-                )
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(withDefaults())
+                ).authorizeHttpRequests(authorize ->
+                        authorize.anyRequest().authenticated())
+                .oauth2ResourceServer(oauth ->
+                        oauth.jwt(withDefaults())
                 );
 
         return http.build();
     }
 
-
-
-    // Extrair dados do token JWT
     @Bean
     public JwtDecoder jwtDecoder() {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
+        SecretKeySpec secretKeySpec = new SecretKeySpec(jwtSecretKey.getBytes(), "HmacSHA256");
 
         return NimbusJwtDecoder.withSecretKey(secretKeySpec).build();
     }
+
+
 }

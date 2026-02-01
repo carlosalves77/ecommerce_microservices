@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.carldev</groupId>
     <artifactId>shopping-cart-service</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.7</version>
     <name>shopping-cart-service</name>
     <description>Carrinho de compras para os produtos</description>
     <url/>
@@ -83,24 +83,6 @@
             <version>4.3.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>0.12.6</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <version>0.12.6</version>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
-            <version>0.12.6</version>
-            <scope>runtime</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -14,7 +14,7 @@ FROM eclipse-temurin:17-jre-alpine AS runner
 
 WORKDIR /app
 
-COPY --from=builder ./app/target/shopping-cart-service-0.0.5.jar ./app.jar
+COPY --from=builder ./app/target/shopping-cart-service-0.0.7.jar ./app.jar
 
 EXPOSE 4006
 
