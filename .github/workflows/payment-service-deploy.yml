@@ -48,8 +48,40 @@ jobs:
           
           docker build -t ${{ secrets.DOCKER_USERNAME }}/payment-service:$PROJECT_VERSION .
           docker push ${{ secrets.DOCKER_USERNAME }}/payment-service:$PROJECT_VERSION
-      - name: Deploy no Kubernetes Local
+
+
+      - name: Atualizar Repositório de CD (GitOps)
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }} 
+          USER_EMAIL: "ci-bot@outlook.com"
+          USER_NAME: "CI Bot"
+          CD_REPO: "carlosalves77/homelab-kubernetes" 
+          FILE_PATH: "payment-service-k8s/payment-service-deploy.yaml"
         run: |
-          echo "Atualizando K8s para versão: $PROJECT_VERSION"
-          kubectl set image deployment/payment-service payment-service=${{ secrets.DOCKER_USERNAME }}/payment-service:$PROJECT_VERSION -n default
-          kubectl rollout restart deployment/payment-service -n default
+          echo "Clonando repositório de CD..."
+
+          rm -rf cd-repo || true
+          git config --global --unset credential.helper || true
+          
+          git clone https://${GH_TOKEN}@github.com/${CD_REPO}.git cd-repo
+          
+          cd cd-repo
+          
+          # Configurar Git
+          git config user.name "$USER_NAME"
+          git config user.email "$USER_EMAIL"
+
+          echo "Tentando editar: $FILE_PATH"
+          ls -la $FILE_PATH || echo "ERRO: Arquivo não encontrado!"
+
+          sed -i "s|image: ${{ secrets.DOCKER_USERNAME }}/payment-service:.*|image: ${{ secrets.DOCKER_USERNAME }}/payment-service:$PROJECT_VERSION|" $FILE_PATH
+
+          if git diff --quiet; then
+            echo "Nenhuma mudança detectada no manifesto Kubernetes. A versão já está atualizada?"
+          else
+            echo "Mudança detectada. Commitando..."
+            git add $FILE_PATH
+            git commit -m "Update payment service image to version $PROJECT_VERSION"
+            git push origin main 
+            echo "Repositório de CD atualizado com sucesso!"
+          fi
