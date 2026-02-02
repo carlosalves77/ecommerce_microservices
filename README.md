@@ -43,6 +43,38 @@ O sistema utiliza uma arquitetura baseada em microsserviços orquestrados por co
 
 ---
 
+
+## Arquitetura de Deploy
+
+Este projeto adota a cultura **DevOps** com um pipeline **GitOps** automatizado:
+
+1.  **CI (Integração Contínua):**
+    * Ao realizar um push na branch `master`, um **GitHub Action** é disparado em um **Runner Self-Hosted** (rodando no meu servidor local).
+    * O código Java é compilado com **Maven** (JDK 17).
+    * É gerada uma imagem **Docker** com versionamento dinâmico (Versão do POM + Short SHA do Git).
+    * A imagem é enviada para o Docker Hub.
+
+2.  **CD (Entrega Contínua):**
+    * O pipeline clona automaticamente o repositório de infraestrutura (`homelab-kubernetes`).
+    * Atualiza o manifesto de deploy (`deployment.yaml`) com a nova tag da imagem.
+    * Realiza o commit e push das alterações.
+    * O **Argo CD**, rodando no cluster **K3s**, detecta a mudança no repositório de infra e sincroniza o estado do cluster, realizando o deploy da nova versão.
+  
+
+
+
+### Fluxo da Arquitetura de Deploy
+
+
+![Diagrama de Arquitetura de Deploy](./images/workflow.png)
+
+
+
+
+[Github Projeto Kubernetes](https://github.com/carlosalves77/homelab-kubernetes)
+
+---
+
 # Services
 
 ### API Gateway
@@ -722,6 +754,9 @@ docker-compose up -d kafka kafka-ui prometheus grafana
 ```
 
 ---
+
+
+
 
 ###  Inspiração e Créditos
 
