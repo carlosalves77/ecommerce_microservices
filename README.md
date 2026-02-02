@@ -160,8 +160,6 @@ Responsável pela gestão de identidade, emissão de tokens JWT (JSON Web Tokens
 Serviço com persistência de dados em PostgreSQL e também com producer de eventos para o ecossistema via Kafka, garantino que o tempo de resposta do usuário não seja afetado pelo envio de e-mails.
 
 
-![Fluxograma Auth Service](./images/)
-
 ### Funcionalidades Principais
 
 •  Autenticação JWT: Emissão e validação de tokens seguros.
@@ -724,6 +722,14 @@ Monitoramento centralizado para coletar métricas de performance da JVM, do Spri
 • Requer o arquivo de configuração prometheus.yml na raiz para definir os alvos (targets).
 
 • Grafana: Plataforma de visualização. Conecta-se ao Prometheus para gerar dashboards gráficos sobre latência, requisições por segundo e erros.
+
+
+## Grafana Java Services
+
+
+![Diagrama de Arquitetura](./images/grafana-java.png)
+
+
 
 ## Acesso aos Serviços de Infraestrutura
 
