@@ -8,7 +8,7 @@
 ![Redis](https://img.shields.io/badge/Redis-Cache-red?style=for-the-badge&logo=redis)
 
 
-Sistema robusto de microsserviços para e-commerce, desenvolvido com foco em escalabilidade, segurança e alta performance. O projeto orquestra serviços independentes para gestão de catálogo, autenticação segura, carrinho de compras de alta velocidade e processamento assíncrono de pagamentos.
+Sistema robusto de microsserviços para e-commerce, desenvolvido com foco em escalabilidade, segurança e alta performance. O projeto orquestra serviços independentes para gestão de catálogo, autenticação segura, carrinho de compras, serviço de orders de pedido, processamento assíncrono de pagamentos e processo assíncrono de notificações.
 
 ---
 
