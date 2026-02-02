@@ -26,7 +26,7 @@ O sistema utiliza uma arquitetura baseada em microsserviços orquestrados por co
 
 • Arquitetura: Microservices, MVC, API Gateway
 
-• Banco de Dados: * PostgreSQL: Para dados relacionais (Usuários, Produtos, Pagamentos).
+• Banco de Dados: * PostgreSQL: Para dados relacionais (Usuários, Produtos, Pagamentos, Orders).
 
 • Redis: Para dados voláteis e de acesso rápido (Carrinho de Compras).
 
