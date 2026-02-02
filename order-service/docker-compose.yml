@@ -39,7 +39,6 @@ services:
     networks:
       - internal
 
-
 volumes:
   orders_data:
 
