@@ -18,7 +18,7 @@ O sistema utiliza uma arquitetura baseada em microsserviços orquestrados por co
 
 ### Diagrama de Arquitetura
 
-![Arquitetura](images/project-system-design.png)
+![Diagrama de Arquitetura](images/project-architect.png)
 
 ###  Tecnologias e Ferramentas
 
