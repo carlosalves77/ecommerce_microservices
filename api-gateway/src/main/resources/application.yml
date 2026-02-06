@@ -2,10 +2,21 @@ server:
   port: 4000
 
 spring:
+  data:
+    redis:
+      host: redis
+      port: 6379
   cloud:
     gateway:
       server:
         webflux:
+          default-filters:
+            - name: RequestRateLimiter
+              args:
+                key-resolver: "#{@ipKeyResolver}"
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+
           routes:
             - id: auth-public-route
               uri: http://auth-service:4005
@@ -15,14 +26,14 @@ spring:
             - id: auth-private-route
               uri: http://auth-service:4005
               predicates:
-                 - Path=/api/auth/user/**, /api/auth/all, /api/auth/validate
+                - Path=/api/auth/user/**, /api/auth/all, /api/auth/validate
               filters:
                 - JwtValidation
 
             - id: auth-swagger-route
               uri: http://auth-service:4005
               predicates:
-              - Path=/auth/v3/api-docs/**
+                - Path=/auth/v3/api-docs/**
               filters:
                 - RewritePath=/auth/(?<segment>.*), /$\{segment}
 
@@ -36,7 +47,7 @@ spring:
             - id: product-service-swagger-route
               uri: http://product-catalog-service:4004
               predicates:
-              - Path=/product/v3/api-docs/**
+                - Path=/product/v3/api-docs/**
               filters:
                 - RewritePath=/product/(?<segment>.*), /$\{segment}
 
@@ -102,8 +113,6 @@ spring:
                 - Path=/notification/v3/api-docs/**
               filters:
                 - RewritePath=/notification/(?<segment>.*), /$\{segment}
-
-
 
 springdoc:
   swagger-ui:
