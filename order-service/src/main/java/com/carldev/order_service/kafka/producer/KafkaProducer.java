@@ -1,5 +1,6 @@
 package com.carldev.order_service.kafka.producer;
 
+import com.carldev.order_service.kafka.event.PaymentSuccessEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;

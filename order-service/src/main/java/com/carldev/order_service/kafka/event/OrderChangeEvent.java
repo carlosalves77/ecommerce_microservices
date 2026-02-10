@@ -1,4 +1,4 @@
-package com.carldev.order_service.kafka.producer;
+package com.carldev.order_service.kafka.event;
 
 import com.carldev.order_service.util.OrderStatus;
 

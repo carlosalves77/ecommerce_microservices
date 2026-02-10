@@ -7,8 +7,8 @@ import com.carldev.order_service.dto.response.DeletePaymentResponseDTO;
 import com.carldev.order_service.dto.response.OrderStatusResponseDTO;
 import com.carldev.order_service.dto.response.OrdersResponseDTO;
 import com.carldev.order_service.feignClient.ProductCatalogClient;
-import com.carldev.order_service.kafka.producer.OrderChangeEvent;
-import com.carldev.order_service.kafka.producer.PaymentSuccessEvent;
+import com.carldev.order_service.kafka.event.OrderChangeEvent;
+import com.carldev.order_service.kafka.event.PaymentSuccessEvent;
 import com.carldev.order_service.mapper.OrderMapper;
 import com.carldev.order_service.model.Order;
 import com.carldev.order_service.model.OrderItem;
@@ -85,7 +85,6 @@ public class OrderService {
         orderRepository.save(orderPayment);
 
         eventPublisher.publishEvent(paymentSuccess);
-
     }
 
     @KafkaListener(topics = "checkout-create", groupId = "order-service-group")
