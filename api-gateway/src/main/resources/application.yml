@@ -107,13 +107,6 @@ spring:
               filters:
                 - JwtValidation
 
-            - id: notification-service-swagger-route
-              uri: http://notification-service:4008
-              predicates:
-                - Path=/notification/v3/api-docs/**
-              filters:
-                - RewritePath=/notification/(?<segment>.*), /$\{segment}
-
 springdoc:
   swagger-ui:
     path: /swagger
@@ -129,7 +122,5 @@ springdoc:
         url: /payment/v3/api-docs
       - name: Order Service
         url: /orders/v3/api-docs
-      - name: Notification Service
-        url: /notification/v3/api-docs
   api-docs:
     enabled: true
