@@ -38,11 +38,11 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize ->
                         authorize.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-                                .requestMatchers("/api/auth/login",
-                                        "/api/auth/register",
-                                        "/api/auth/verify-account",
-                                        "/api/auth/reset-password/**",
-                                        "/api/auth/validate",
+                                .requestMatchers("/api/v1/auth/login",
+                                        "/api/v1/auth/register",
+                                        "/api/v1/auth/verify-account",
+                                        "/api/v1/auth/reset-password/**",
+                                        "/api/v1/auth/validate",
                                         "/actuator/**",
                                         "/v3/api-docs/**",
                                         "/swagger-ui/**",
