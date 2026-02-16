@@ -21,12 +21,13 @@ spring:
             - id: auth-public-route
               uri: http://auth-service:4005
               predicates:
-                - Path=/api/auth/login, /api/auth/register, /api/auth/verify-account, /api/auth/reset-password/**
+                - Path=/api/v1/auth/login, /api/v1/auth/register, /api/v1/auth/verify-account,
+                  /api/v1/auth/reset-password/**
 
             - id: auth-private-route
               uri: http://auth-service:4005
               predicates:
-                - Path=/api/auth/user/**, /api/auth/all, /api/auth/validate
+                - Path=/api/v1/auth/user/**, /api/v1/auth/all, /api/v1/auth/validate
               filters:
                 - JwtValidation
 
@@ -40,7 +41,7 @@ spring:
             - id: product-route
               uri: http://product-catalog-service:4004
               predicates:
-                - Path=/api/product/**
+                - Path=/api/v1/product/**
               filters:
                 - JwtValidation
 
@@ -54,14 +55,14 @@ spring:
             - id: categories-route
               uri: http://product-catalog-service:4004
               predicates:
-                - Path=/api/categories/**
+                - Path=/api/v1/categories/**
               filters:
                 - JwtValidation
 
             - id: shopping-cart-service-route
               uri: http://shopping-cart-service:4006
               predicates:
-                - Path=/api/cart/**
+                - Path=/api/v1/cart/**
               filters:
                 - JwtValidation
 
@@ -75,7 +76,7 @@ spring:
             - id: payment-service-route
               uri: http://payment-service:4007
               predicates:
-                - Path=/api/payment/**
+                - Path=/api/v1/payment/**
               filters:
                 - JwtValidation
 
@@ -89,7 +90,7 @@ spring:
             - id: orders-service-route
               uri: http://orders-service:4009
               predicates:
-                - Path=/api/orders/**
+                - Path=/api/v1/orders/**
               filters:
                 - JwtValidation
 
