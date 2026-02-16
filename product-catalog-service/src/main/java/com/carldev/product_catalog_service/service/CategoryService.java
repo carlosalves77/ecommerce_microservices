@@ -37,6 +37,7 @@ public class CategoryService {
         return allCategories.map(categoryMapper::toDto);
     }
 
+
     public CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO) {
 
         if (categoryRepository.existsBySlug(categoryRequestDTO.slug())) {
@@ -81,7 +82,7 @@ public class CategoryService {
     public List<CategoryResponseDTO> findBySlug(String slug) {
 
         if (slug.isBlank()) {
-            throw new RuntimeException("Slug está vazio");
+            throw new SlugAlreadyExistsException("Slug está vazio");
         }
 
         List<Category> categoryList = categoryRepository.findBySlugContainingIgnoreCase(slug);
