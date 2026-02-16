@@ -14,7 +14,7 @@ FROM eclipse-temurin:17-jre-alpine AS runner
 
 WORKDIR /app
 
-COPY --from=builder ./app/target/order-service-0.0.3.jar ./app.jar
+COPY --from=builder ./app/target/order-service-0.0.4.jar ./app.jar
 
 EXPOSE 4009
 

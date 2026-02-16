@@ -40,7 +40,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         try {
             String path = request.getRequestURI();
-            if (path.startsWith("/api/auth/login") || path.equals("/api/auth/register")) {
+            if (path.startsWith("/api/v1/auth/login") || path.equals("/api/v1/auth/register")) {
               filterChain.doFilter(request, response);
                 return;
             }
