@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.carldev</groupId>
 	<artifactId>product-catalog-service</artifactId>
-	<version>0.0.8</version>
+	<version>0.0.9</version>
 	<name>product-catalog-service</name>
 
 	<description>Demo project for Spring Boot</description>
