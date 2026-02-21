@@ -16,9 +16,11 @@ import com.carldev.auth_service.mapper.AuthRegisterMapper;
 import com.carldev.auth_service.model.ResetToken;
 import com.carldev.auth_service.model.UserAuth;
 import com.carldev.auth_service.model.VerificationToken;
+import com.carldev.auth_service.repository.AddressRepository;
 import com.carldev.auth_service.repository.AuthRepository;
 import com.carldev.auth_service.repository.ResetTokenRepository;
 import com.carldev.auth_service.repository.TokenVerificationRepository;
+import com.carldev.auth_service.util.RoleType;
 import com.carldev.auth_service.util.SecureR;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +47,7 @@ import java.util.stream.Collectors;
 public class UserAuthService {
 
     private final AuthRepository authRepository;
+    private final AddressRepository addressRepository;
     private final TokenConfig tokenConfig;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
@@ -54,13 +57,15 @@ public class UserAuthService {
     private final ResetTokenRepository resetTokenRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public UserAuthService(AuthRepository authRepository, TokenConfig tokenConfig,
+    public UserAuthService(AuthRepository authRepository, AddressRepository addressRepository,
+                           TokenConfig tokenConfig,
                            AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder,
                            AuthRegisterMapper authRegisterMapper, AuthMapper authMapper,
                            TokenVerificationRepository tokenVerificationRepository,
                            ResetTokenRepository resetTokenRepository,
                            ApplicationEventPublisher applicationEventPublisher) {
         this.authRepository = authRepository;
+        this.addressRepository = addressRepository;
         this.tokenConfig = tokenConfig;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
@@ -79,10 +84,11 @@ public class UserAuthService {
         }
 
         UserAuth userAuth = authRegisterMapper.toEntity(authRegisterRequestDTO);
-        
+
         String encodePassword = passwordEncoder.encode(authRegisterRequestDTO.password());
         userAuth.setPassword(encodePassword);
         userAuth.setIsVerified(false);
+        userAuth.setRole(RoleType.GUEST);
         UserAuth saveUserAuth = authRepository.save(userAuth);
 
         VerificationToken verificationToken = new VerificationToken(saveUserAuth);
@@ -93,7 +99,7 @@ public class UserAuthService {
 
 
         CreateAccountValidationEvent accountValidationEvent = new CreateAccountValidationEvent
-                        (verificationLink, saveUserAuth.getUsername(), saveUserAuth.getEmail());
+                (verificationLink, saveUserAuth.getUsername(), saveUserAuth.getEmail());
 
         applicationEventPublisher.publishEvent(accountValidationEvent);
 
@@ -101,7 +107,7 @@ public class UserAuthService {
     }
 
 
-    public AuthLoginResponseDTO loginUser(AuthLoginRequestDTO requestDTO)  {
+    public AuthLoginResponseDTO loginUser(AuthLoginRequestDTO requestDTO) {
 
 
         try {
@@ -236,5 +242,7 @@ public class UserAuthService {
 
         return users.map(authMapper::toDto);
     }
+
+
 
 }
