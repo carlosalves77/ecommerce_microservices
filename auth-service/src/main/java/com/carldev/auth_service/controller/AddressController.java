@@ -69,6 +69,20 @@ public class AddressController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<AddressResponseDTO> findAddressById(
+            @PathVariable UUID id,
+            Authentication authentication
+    ) throws AccessDeniedException {
+
+        UserAuth userAuth = (UserAuth) authentication.getPrincipal();
+        UUID userId = userAuth.getUserId();
+
+        AddressResponseDTO responseDTO = addressService.findAddressById(id, userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(
             @PathVariable UUID id
