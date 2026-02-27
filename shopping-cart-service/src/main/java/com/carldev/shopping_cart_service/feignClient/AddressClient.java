@@ -11,7 +11,7 @@ import java.util.UUID;
 @FeignClient(name = "auth-service", url = "http://auth-service:4005", configuration = FeignClientInterceptor.class)
 public interface AddressClient {
 
-    @GetMapping("/api/v1/address/{id}")
+    @GetMapping("/api/v1/address/find/{id}")
     AddressResponseDTO findAddressById(@PathVariable("id") UUID id);
 
 }
