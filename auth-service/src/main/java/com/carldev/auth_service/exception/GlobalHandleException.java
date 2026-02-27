@@ -100,4 +100,15 @@ public class GlobalHandleException {
         );
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
     }
+
+    @ExceptionHandler(AddressNotExistsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleIfAddressNotFoundException(AddressNotExistsException ex) {
+        ErrorResponseDTO responseDTO = new ErrorResponseDTO(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
+    }
 }

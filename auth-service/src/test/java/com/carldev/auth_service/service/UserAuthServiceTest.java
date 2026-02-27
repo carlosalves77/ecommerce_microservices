@@ -76,8 +76,7 @@ class UserAuthServiceTest {
         AuthRegisterRequestDTO registerRequestDTO = new AuthRegisterRequestDTO(
                 email,
                 rawPassword,
-                "Carlos",
-                RoleType.ADMIN
+                "Carlos"
         );
 
 
