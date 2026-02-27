@@ -69,7 +69,7 @@ public class AddressController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/find/{id}")
     public ResponseEntity<AddressResponseDTO> findAddressById(
             @PathVariable UUID id,
             Authentication authentication
