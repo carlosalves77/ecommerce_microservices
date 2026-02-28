@@ -53,7 +53,6 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(allProducts);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/payment/debit")
     public ResponseEntity<ProductResponseDTO> getDebitInventoryQuantity(
             @Valid
