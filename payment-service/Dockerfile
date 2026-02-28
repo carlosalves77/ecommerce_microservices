@@ -16,6 +16,6 @@ WORKDIR /app
 
 COPY --from=builder ./app/target/payment-service-0.0.9.jar ./app.jar
 
-EXPOSE 4006
+EXPOSE 4007
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
