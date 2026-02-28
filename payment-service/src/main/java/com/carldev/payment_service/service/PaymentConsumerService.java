@@ -1,10 +1,10 @@
 package com.carldev.payment_service.service;
 
 import com.carldev.payment_service.dto.request.ItemDTO;
+import com.carldev.payment_service.dto.request.OrderConsumeEvent;
 import com.carldev.payment_service.dto.response.GetPaymentsResponseDTO;
 import com.carldev.payment_service.entity.Payment;
 import com.carldev.payment_service.entity.PaymentItem;
-import com.carldev.payment_service.dto.request.OrderConsumeEvent;
 import com.carldev.payment_service.kafka.producer.PaymentSuccessEvent;
 import com.carldev.payment_service.mapper.PaymentMapper;
 import com.carldev.payment_service.repository.PaymentRepository;
@@ -181,11 +181,11 @@ public class PaymentConsumerService {
 
             String savedPaymentMethod = paymentMethods.getData().get(0).getId();
 
+
             PaymentIntentConfirmParams confirmParams = PaymentIntentConfirmParams.builder()
                     .setPaymentMethod(savedPaymentMethod)
-                    .setReturnUrl("http://localhost:4007/api/payment/success-mock")
+                    .setReturnUrl("http://localhost:4007/api/v1/payment/success-mock")
                     .build();
-
 
             paymentIntent.confirm(confirmParams);
 
@@ -205,12 +205,12 @@ public class PaymentConsumerService {
     }
 
     @Transactional
-    public void webhook(String payload, String sigHeader) throws StripeException {
+    public void webhook(String payload, String sigHeader) {
 
         try {
             event = Webhook.constructEvent(payload, sigHeader, webhookSecretKey);
         } catch (SignatureVerificationException e) {
-            log.info("Erro de assinatura {} ", e.getMessage());
+            throw new IllegalArgumentException("Falha ao verificar assinatura");
         } catch (Exception e) {
             throw new RuntimeException("Erro no Webhook" + e.getMessage());
         }
@@ -250,7 +250,7 @@ public class PaymentConsumerService {
                 () -> new RuntimeException("Pagamento não encontrado: " + paymentId)
         );
 
-        log.info("Qual o tipo de evento {}",event.getType());
+        log.info("Qual o tipo de evento {}", event.getType());
 
         switch (event.getType()) {
             case "payment_intent.succeeded":
@@ -344,7 +344,6 @@ public class PaymentConsumerService {
 
         if (paymentIntent.getLastPaymentError() == null) {
             reason = paymentIntent.getLastPaymentError().getMessage();
-            log.warn("Falha no pagamento: {} {}", payment.getId(), reason);
         }
 
         payment.setPaymentStatus(PaymentStatus.REJECTED);
@@ -362,4 +361,7 @@ public class PaymentConsumerService {
         }
     }
 
+    public void deleteAllPayments() {
+        paymentRepository.deleteAll();
+    }
 }
