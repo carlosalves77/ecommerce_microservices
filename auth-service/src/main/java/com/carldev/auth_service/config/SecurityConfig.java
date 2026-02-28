@@ -40,6 +40,7 @@ public class SecurityConfig {
                         authorize.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                                 .requestMatchers("/api/v1/auth/login",
                                         "/api/v1/auth/register",
+                                        "api/v1/address/find/**",
                                         "/api/v1/auth/verify-account",
                                         "/api/v1/auth/reset-password/**",
                                         "/api/v1/auth/validate",
