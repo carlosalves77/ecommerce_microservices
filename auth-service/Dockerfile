@@ -18,4 +18,4 @@ COPY --from=builder ./app/target/auth-service-0.0.7.jar ./app.jar
 
 EXPOSE 4005
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]
