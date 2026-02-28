@@ -18,6 +18,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -41,7 +42,7 @@ public class NotificationService {
     }
 
 
-    @KafkaListener(topics = "payment-success", groupId = "notification-service-group")
+    @KafkaListener(topics = "payment-success-notification", groupId = "notification-service-group")
     public void handlePaymentSuccess(String messageJson) {
 
         try {
@@ -56,7 +57,7 @@ public class NotificationService {
             context.setVariable("paymentMethod", paymentSuccessConsumer.paymentMethod());
             context.setVariable("cardLast4", paymentSuccessConsumer.cardLast4());
             context.setVariable("paidAt", paymentSuccessConsumer.paidAt());
-
+            context.setVariable("address", paymentSuccessConsumer.addressPaymentSuccess());
             context.setVariable("items", paymentSuccessConsumer.items());
 
             String htmlBody = templateEngine.process("email/payment-success", context);
