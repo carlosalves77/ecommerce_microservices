@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.carldev</groupId>
 	<artifactId>order-service</artifactId>
-	<version>0.0.5</version>
+	<version>0.0.7</version>
 	<name>order-service</name>
 	<description>Micro service Order Service</description>
 	<url/>
