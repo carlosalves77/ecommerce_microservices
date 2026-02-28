@@ -7,7 +7,7 @@ public record OrderChangeNotification(
         UUID orderId,
         String userEmail,
         String userName,
-        long orderNumber,
+        String orderNumber,
         BigDecimal totalAmount,
         String status,
         String updateAt
