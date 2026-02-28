@@ -21,7 +21,6 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # --- NOVO PASSO: Extrair versão do POM ---
       - name: Ler versão do pom.xml
         id: get_version
         run: |
