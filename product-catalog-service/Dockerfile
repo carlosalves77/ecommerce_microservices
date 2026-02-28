@@ -16,6 +16,6 @@ WORKDIR /app
 
 COPY --from=builder ./app/target/product-catalog-service-0.0.9.jar ./app.jar
 
-EXPOSE 4000
+EXPOSE 4004
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

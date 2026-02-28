@@ -6,10 +6,11 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "product-catalog-payment", url = "http://product-catalog-service:4004")
+@FeignClient(name = "product-catalog-payment", url = "http://product-catalog-service:4004", configuration =
+        FeignClientInterceptor.class)
 public interface ProductCatalogClient {
 
-    @PostMapping("/api/product/payment/debit")
+    @PostMapping("/api/v1/product/payment/debit")
     void getProductDebit(@RequestBody AddItemRequestDTO dto);
 
 

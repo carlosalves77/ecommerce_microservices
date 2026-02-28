@@ -3,12 +3,14 @@ package com.carldev.shopping_cart_service.service;
 import com.carldev.shopping_cart_service.dto.request.OrderItemDTO;
 import com.carldev.shopping_cart_service.dto.request.AddItemRequestDTO;
 import com.carldev.shopping_cart_service.dto.request.OrderPlacementRequestDTO;
+import com.carldev.shopping_cart_service.dto.response.AddressResponseDTO;
 import com.carldev.shopping_cart_service.dto.response.CartItemResponseDTO;
 import com.carldev.shopping_cart_service.dto.response.ProductResponseDTO;
 import com.carldev.shopping_cart_service.exception.HandleIfCartIsEmptyException;
 import com.carldev.shopping_cart_service.exception.HandleIfCartNotFoundException;
 import com.carldev.shopping_cart_service.exception.HandleQuantityNotValidException;
 import com.carldev.shopping_cart_service.exception.HandleSkuNotExistsException;
+import com.carldev.shopping_cart_service.feignClient.AddressClient;
 import com.carldev.shopping_cart_service.feignClient.ProductCatalogClient;
 import com.carldev.shopping_cart_service.kafka.CheckOutCreatedEvent;
 import com.carldev.shopping_cart_service.mapper.CartMapper;
@@ -19,6 +21,7 @@ import feign.FeignException;
 import io.hypersistence.tsid.TSID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -35,14 +38,16 @@ public class CartService {
 
     private final CartRepository cartRepository;
     private final ProductCatalogClient productCatalogClient;
+    private final AddressClient addressClient;
     private final ApplicationEventPublisher eventPublisher;
     private final CartMapper cartMapper;
 
 
 
-    public CartService(CartRepository cartRepository, ProductCatalogClient productCatalogClient, ApplicationEventPublisher eventPublisher, CartMapper cartMapper) {
+    public CartService(CartRepository cartRepository, ProductCatalogClient productCatalogClient, AddressClient addressClient, ApplicationEventPublisher eventPublisher, CartMapper cartMapper) {
         this.cartRepository = cartRepository;
         this.productCatalogClient = productCatalogClient;
+        this.addressClient = addressClient;
         this.eventPublisher = eventPublisher;
         this.cartMapper = cartMapper;
     }
@@ -167,7 +172,7 @@ public class CartService {
     }
 
 
-    public void processCheckout(Authentication authentication) {
+    public void processCheckout(UUID addressId, Authentication authentication) {
 
         Jwt jwt = (Jwt) authentication.getPrincipal();
 
@@ -183,7 +188,18 @@ public class CartService {
             throw new HandleIfCartIsEmptyException("O carrinho está vazio");
         }
 
-        OrderPlacementRequestDTO requestDTO = mapToOrder(cart, userId, email, userName);
+        AddressResponseDTO address;
+        try {
+            address  = addressClient.findAddressById(addressId);
+        } catch (FeignException.NotFound e) {
+            throw new IllegalArgumentException("Endereço não encontrado");
+        } catch (FeignException.Forbidden e) {
+            throw new AccessDeniedException("Você não tem permissão para usar este endereço");
+        } catch (FeignException e) {
+            throw new RuntimeException("Serviço de endereços indisponível no momento.");
+        }
+
+        OrderPlacementRequestDTO requestDTO = mapToOrder(cart, userId, email, userName, address);
 
         CheckOutCreatedEvent event = CheckOutCreatedEvent.fromEntity(requestDTO);
 
@@ -195,9 +211,8 @@ public class CartService {
 
     }
 
-
-    private OrderPlacementRequestDTO mapToOrder(Cart cart, UUID uuid, String email, String userName) {
-
+    private OrderPlacementRequestDTO mapToOrder(Cart cart, UUID uuid, String email, String userName,
+                                                AddressResponseDTO addressResponseDTO) {
 
         List<OrderItemDTO> orderItemDTOList = cart.getItems().stream()
                 .map(items -> new OrderItemDTO(
@@ -209,13 +224,15 @@ public class CartService {
         TSID tsid = TSID.fast();
         long orderNumber = tsid.toLong();
 
+
         return new OrderPlacementRequestDTO(
                 uuid,
                 email,
                 userName,
                 orderNumber,
                 cart.getTotal(),
-                orderItemDTOList
+                orderItemDTOList,
+                addressResponseDTO
         );
     }
 

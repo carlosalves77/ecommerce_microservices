@@ -6,7 +6,6 @@
     <title>Pagamento Aprovado</title>
     <style>
         body { margin: 0; padding: 0; background-color: #f4f4f7; font-family: sans-serif; color: #555; }
-        /* Tabela Zebrada para os itens */
         .item-row:nth-child(even) { background-color: #f9f9f9; }
     </style>
 </head>
@@ -73,6 +72,20 @@
                             </tr>
                             </tbody>
                         </table>
+
+                        <h3 style="color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 30px;">Endereço de Entrega</h3>
+                        <div style="background-color: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: 20px;">
+                            <p style="margin: 0; font-size: 14px; color: #555; line-height: 1.6;">
+                                <strong style="color: #333;" th:text="${address.streetLine1}">Rua Exemplo, 123</strong><br>
+
+                                <span th:if="${address.streetLine2 != null and !address.streetLine2.isEmpty()}">
+                                    <span th:text="${address.streetLine2}">Apto 45</span><br>
+                                </span>
+
+                                <span th:text="${address.city + ' - ' + address.state}">Cidade - Estado</span><br>
+                                <span th:text="${address.country}">Brasil</span>
+                            </p>
+                        </div>
 
                         <div style="margin-top: 40px; text-align: center;">
                             <a href="#" style="background-color: #48bb78; color: #ffffff; padding: 14px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Ver Detalhes do Pedido</a>

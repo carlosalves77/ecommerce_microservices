@@ -31,7 +31,7 @@ public class PaymentController {
 
         paymentConsumerService.webhook(payload, sigHeader);
 
-        return new ResponseEntity<>("Evento craido", HttpStatus.OK);
+        return  ResponseEntity.status(HttpStatus.CREATED).body("Evento criado com sucesso");
     }
 
     @GetMapping
@@ -41,7 +41,7 @@ public class PaymentController {
 
         Page<GetPaymentsResponseDTO> paymentList = paymentConsumerService.getPayment(page);
 
-        return ResponseEntity.ok().body(paymentList);
+        return ResponseEntity.status(HttpStatus.OK).body(paymentList);
     }
 
     @DeleteMapping("/{id}")
@@ -50,7 +50,7 @@ public class PaymentController {
     ) {
         paymentConsumerService.deleteById(id);
 
-        return ResponseEntity.ok().body("Pagamento deletado");
+        return ResponseEntity.status(HttpStatus.OK).body("Pagamento deletado");
     }
 
     @PostMapping("{id}/{customerId}")
@@ -61,7 +61,13 @@ public class PaymentController {
     ) {
         paymentConsumerService.handlePayment(id, customerId);
 
-        return ResponseEntity.ok().body("Pagamento concluido");
+        return ResponseEntity.status(HttpStatus.OK).body("Pagamento concluido");
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteAllPayment() {
+        paymentConsumerService.deleteAllPayments();
+        return ResponseEntity.status(HttpStatus.OK).body("Todos os pagamentos deletados");
     }
 
 }
