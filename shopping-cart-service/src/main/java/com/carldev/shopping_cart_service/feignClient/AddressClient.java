@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.UUID;
 
-@FeignClient(name = "auth-service", url = "http://auth-service:4005", configuration = FeignClientInterceptor.class)
+@FeignClient(name = "auth-service", url = "172.18.0.1:4005",
+        configuration = FeignClientInterceptor.class)
 public interface AddressClient {
 
     @GetMapping("/api/v1/address/find/{id}")

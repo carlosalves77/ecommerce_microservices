@@ -2,32 +2,32 @@ package com.carldev.shopping_cart_service.config;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Slf4j
-@Configuration
+@Component
 public class FeignClientInterceptor implements RequestInterceptor {
+
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+
     @Override
     public void apply(RequestTemplate requestTemplate) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        ServletRequestAttributes attributes =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
+        if (attributes != null) {
+            HttpServletRequest request = attributes.getRequest();
+            String token = request.getHeader(AUTHORIZATION_HEADER);
 
-        if (authentication == null) {
-            return;
+            if (token != null) {
+                requestTemplate.header(AUTHORIZATION_HEADER, token);
+            }
         }
 
-        if (authentication.getPrincipal() instanceof Jwt) {
-
-            Jwt jwt = (Jwt) authentication.getPrincipal();
-
-            String tokenValue = jwt.getTokenValue();
-            requestTemplate.header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenValue);
-        }
     }
 }

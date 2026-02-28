@@ -27,7 +27,7 @@ spring:
             - id: auth-private-route
               uri: http://auth-service:4005
               predicates:
-                - Path=/api/v1/auth/user/**, /api/v1/auth/all, /api/v1/auth/validate
+                - Path=/api/v1/auth/user/**, /api/v1/auth/all, /api/v1/auth/validate, /api/v1/address/**
               filters:
                 - JwtValidation
 

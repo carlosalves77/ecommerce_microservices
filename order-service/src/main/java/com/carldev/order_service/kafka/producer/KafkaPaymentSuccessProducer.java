@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class KafkaProducer {
+public class KafkaPaymentSuccessProducer {
 
     private static final String TOPIC = "payment-success-notification";
     private final KafkaTemplate<String, PaymentSuccessEvent> kafkaTemplate;
 
-    public KafkaProducer(KafkaTemplate<String, PaymentSuccessEvent> kafkaTemplate) {
+    public KafkaPaymentSuccessProducer(KafkaTemplate<String, PaymentSuccessEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 

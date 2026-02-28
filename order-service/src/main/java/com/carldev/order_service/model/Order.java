@@ -36,6 +36,9 @@ public class Order {
 
     private String userName;
 
+    @Embedded
+    private Address orderAddress;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "order", orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
@@ -57,4 +60,5 @@ public class Order {
         orderItems.add(items);
         items.setOrder(this);
     }
+
 }
