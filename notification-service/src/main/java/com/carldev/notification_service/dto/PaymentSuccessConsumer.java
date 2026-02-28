@@ -7,12 +7,13 @@ public record PaymentSuccessConsumer(
         UUID orderId,
         String userEmail,
         String userName,
-        long orderNumber,
+        String orderNumber,
         String totalAmount,
         String currency,
         String paymentMethod,
         String cardLast4,
         String paidAt,
+        AddressPaymentSuccess addressPaymentSuccess,
         List<ItemDTO> items
 ) {
 
