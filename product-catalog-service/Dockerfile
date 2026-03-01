@@ -14,7 +14,7 @@ FROM eclipse-temurin:17-jre-alpine AS runner
 
 WORKDIR /app
 
-COPY --from=builder ./app/target/product-catalog-service-0.0.9.jar ./app.jar
+COPY --from=builder ./app/target/product-catalog-service-1.0.0.jar ./app.jar
 
 EXPOSE 4004
 
