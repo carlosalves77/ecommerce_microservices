@@ -3,6 +3,7 @@ package com.carldev.product_catalog_service.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -25,17 +26,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                        .authorizeHttpRequests(
+                .authorizeHttpRequests(
                         auth ->
                                 auth.requestMatchers(
-                                        "/v3/api-docs/**",
-                                        "/swagger-ui/**",
-                                        "/swagger-ui.html",
-                                        "/swagger-resources/**",
-                                        "/actuator/prometheus",
-                                        "/webjars/**",
-                                        "/api/v1/product/payment/debit"
-                                ).permitAll()
+                                                "/v3/api-docs/**",
+                                                "/swagger-ui/**",
+                                                "/swagger-ui.html",
+                                                "/swagger-resources/**",
+                                                "/actuator/prometheus",
+                                                "/webjars/**",
+                                                "/api/v1/product/payment/debit"
+                                        ).permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/api/v1/product/all",
+                                                "/api/v1/product/search"
+                                        )
+                                        .permitAll()
 
                 ).sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

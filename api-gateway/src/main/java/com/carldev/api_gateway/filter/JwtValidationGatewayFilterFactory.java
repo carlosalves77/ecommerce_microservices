@@ -21,7 +21,8 @@ public class JwtValidationGatewayFilterFactory extends AbstractGatewayFilterFact
             "/api/v1/auth/register",
             "/api/v1/auth/verify-account",
             "/api/v1/auth/reset-password",
-            "/api/v1/auth/reset-password/confirm"
+            "/api/v1/auth/reset-password/confirm",
+            "/api/v1/product/all"
     );
 
     private final WebClient webClient;
