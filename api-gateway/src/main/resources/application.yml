@@ -38,12 +38,19 @@ spring:
               filters:
                 - RewritePath=/auth/(?<segment>.*), /$\{segment}
 
-            - id: product-route
+            - id: product-public-read-routes
               uri: http://product-catalog-service:4004
               predicates:
                 - Path=/api/v1/product/**
+                - Method=GET
+
+            - id: product-private-write-routes
+              uri: http://product-catalog-service:4004
+              predicates:
+                - Path=/api/v1/product/**
+                - Method=POST, PUT, DELETE
               filters:
-                - JwtValidation
+                - name: JwtValidation
 
             - id: product-service-swagger-route
               uri: http://product-catalog-service:4004
