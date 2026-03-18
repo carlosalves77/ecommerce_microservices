@@ -43,6 +43,9 @@ public class UserAuth implements UserDetails {
     @NotNull
     private String password;
 
+    @Column(name = "profile_picture")
+    private String profilePicture;
+
     @Column(name = "is_verified", columnDefinition = "boolean default false")
     private Boolean isVerified;
 
