@@ -76,6 +76,7 @@ public class ProductController {
         return ResponseEntity.ok().body(product);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProductResponseDTO> createProduct(
             @Valid @RequestBody ProductRequestDTO productRequestDTO
