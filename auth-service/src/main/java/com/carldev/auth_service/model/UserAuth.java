@@ -57,7 +57,7 @@ public class UserAuth implements UserDetails {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private RoleType role = RoleType.GUEST;
+    private RoleType role = RoleType.USER;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

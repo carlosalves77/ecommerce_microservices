@@ -14,7 +14,7 @@ FROM eclipse-temurin:17-jre-alpine AS runner
 
 WORKDIR /app
 
-COPY --from=builder ./app/target/auth-service-0.0.9.jar ./app.jar
+COPY --from=builder ./app/target/auth-service-1.0.1.jar ./app.jar
 
 EXPOSE 4005
 

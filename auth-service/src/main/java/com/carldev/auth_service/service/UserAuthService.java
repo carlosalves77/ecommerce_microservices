@@ -88,7 +88,7 @@ public class UserAuthService {
         String encodePassword = passwordEncoder.encode(authRegisterRequestDTO.password());
         userAuth.setPassword(encodePassword);
         userAuth.setIsVerified(false);
-        userAuth.setRole(RoleType.GUEST);
+        userAuth.setRole(RoleType.USER);
         UserAuth saveUserAuth = authRepository.save(userAuth);
 
         VerificationToken verificationToken = new VerificationToken(saveUserAuth);
