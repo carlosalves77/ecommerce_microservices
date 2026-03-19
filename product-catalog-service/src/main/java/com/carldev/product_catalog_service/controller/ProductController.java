@@ -87,6 +87,7 @@ public class ProductController {
         return new ResponseEntity<>(newProductResponse, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public ResponseEntity<ProductResponseDTO> updateProduct(
             @RequestParam("id") Long id,
