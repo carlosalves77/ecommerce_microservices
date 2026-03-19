@@ -30,6 +30,7 @@ public class TokenConfig {
     public String generateToken(UserAuth userAuth) {
         return JWT.create().withClaim("userId", userAuth.getUserId().toString())
                 .withClaim("userName", userAuth.getUsername())
+                .withClaim("roles", userAuth.getRole().toString())
                 .withSubject(userAuth.getEmail())
                 .withExpiresAt(Instant.now()
                         .plusSeconds(86400)
