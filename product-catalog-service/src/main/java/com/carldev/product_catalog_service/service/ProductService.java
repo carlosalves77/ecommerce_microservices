@@ -55,6 +55,7 @@ public class ProductService {
                 categoryRepository.findAllById(productRequestDTO.categoryIds())
         );
         newProduct.setCategories(categories);
+        newProduct.setSpecifications(productRequestDTO.specifications());
 
         Inventory newInventory = new Inventory();
         newInventory.setStockQuantity(productRequestDTO.stockQuantity());
@@ -80,6 +81,7 @@ public class ProductService {
         product.setPrice(requestDTO.price());
         product.setImageUrl(requestDTO.imageUrl());
         product.setActive(requestDTO.active());
+
 
         Product updateProduct = productRepository.save(product);
 
@@ -162,5 +164,15 @@ public class ProductService {
         Page<Product> listAllProducts = productRepository.findAll(pageable);
 
         return listAllProducts.map(productMapper::toDto);
+    }
+
+    @Transactional
+    public ProductResponseDTO getProductById(Long id) {
+
+        Product product = productRepository.findById(id).orElseThrow(
+                () -> new ProductIdNotExistsException("Produto não encontrado")
+        );
+
+        return productMapper.toDto(product);
     }
 }
