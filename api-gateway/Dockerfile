@@ -14,7 +14,7 @@ FROM eclipse-temurin:17-jre-alpine AS runner
 
 WORKDIR /app
 
-COPY --from=builder ./app/target/api-gateway-0.1.2.jar ./app.jar
+COPY --from=builder ./app/target/api-gateway-1.0.3.jar ./app.jar
 
 EXPOSE 4000
 
