@@ -29,7 +29,7 @@ public class ProductController {
     public ResponseEntity<ProductResponseDTO> getProductBySkuCriteria(
             @PathVariable String sku
     ) {
-       ProductResponseDTO productResponseSku = productService.findProductSku(sku);
+        ProductResponseDTO productResponseSku = productService.findProductSku(sku);
 
         return ResponseEntity.ok().body(productResponseSku);
     }
@@ -45,7 +45,7 @@ public class ProductController {
 
     @GetMapping("/all")
     public ResponseEntity<Page<ProductResponseDTO>> getAllProducts(
-           @RequestParam("page") int page
+            @RequestParam("page") int page
     ) {
 
         Page<ProductResponseDTO> allProducts = productService.getAllProductList(page);
@@ -93,11 +93,20 @@ public class ProductController {
             @RequestParam("id") Long id,
             @Valid
             @RequestBody UpdateProductRequestDTO requestDTO
-            ) {
+    ) {
 
         ProductResponseDTO productResponseDTO = productService.updateProduct(requestDTO, id);
 
         return ResponseEntity.ok().body(productResponseDTO);
+    }
+
+    @GetMapping("/find/{id}")
+    public ResponseEntity<ProductResponseDTO> getProductById(@PathVariable("id") Long id) {
+
+
+        ProductResponseDTO product = productService.getProductById(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(product);
     }
 
     @DeleteMapping()
@@ -105,6 +114,6 @@ public class ProductController {
             @RequestParam("id") Long id
     ) {
         productService.deleteProduct(id);
-      return  ResponseEntity.ok().body("Produto deletado");
+        return ResponseEntity.ok().body("Produto deletado");
     }
 }

@@ -12,6 +12,7 @@ public record AuthResponseDTO(
         UUID userId,
         String email,
         String username,
+        String profilePicture,
         LocalDateTime created_at,
         Instant lastLoginAt,
         Boolean isVerified,

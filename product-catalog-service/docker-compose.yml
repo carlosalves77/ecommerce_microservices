@@ -27,13 +27,17 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_product:5432/${postgres_database}
       - SPRING_DATASOURCE_USERNAME=${spring_user}
       - SPRING_DATASOURCE_PASSWORD=${spring_password}
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
       - SERVER_PORT=4004
       - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,prometheus
       - MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED=true
       - SPRING_JPA_OPEN_IN_VIEW=false
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - SPRING_FLYWAY_ENABLED=true
+      - SPRING_FLYWAY_BASELINE_ON_MIGRATE=true
+      - SPRING_FLYWAY_BASELINE_VERSION=1
+      - SPRING_FLYWAY_BASELINE_DESCRIPTION=Baseline_Initial_Schema
     ports:
       - "4004:4004"
     networks:

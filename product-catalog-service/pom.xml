@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.carldev</groupId>
 	<artifactId>product-catalog-service</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<name>product-catalog-service</name>
 
 	<description>Demo project for Spring Boot</description>
@@ -102,8 +102,17 @@
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
 		</dependency>
 
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
 
-	</dependencies>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+
+    </dependencies>
 
 	<build>
 		<plugins>

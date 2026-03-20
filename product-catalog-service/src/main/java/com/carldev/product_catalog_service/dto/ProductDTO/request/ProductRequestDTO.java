@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Set;
 
 public record ProductRequestDTO(
@@ -27,6 +28,8 @@ public record ProductRequestDTO(
         Integer stockQuantity,
 
         @NotNull(message = "A lista de Ids de categoria é obrigatória")
-        Set<Long> categoryIds
+        Set<Long> categoryIds,
+
+        Map<String, Object> specifications
 ) {
 }

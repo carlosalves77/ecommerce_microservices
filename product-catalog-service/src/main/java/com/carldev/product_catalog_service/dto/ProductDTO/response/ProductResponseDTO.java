@@ -4,6 +4,7 @@ import com.carldev.product_catalog_service.dto.CategoryDTO.response.CategoryResp
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Set;
 
 public record ProductResponseDTO(
@@ -20,9 +21,9 @@ public record ProductResponseDTO(
         int stockQuantity,
         int reservedQuantity,
 
-        Set<CategoryResponseDTO> categories
+        Set<CategoryResponseDTO> categories,
 
-
+        Map<String, Object>specifications
 ) {
 }
 

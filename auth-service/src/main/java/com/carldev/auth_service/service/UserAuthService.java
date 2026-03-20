@@ -1,10 +1,7 @@
 package com.carldev.auth_service.service;
 
 import com.carldev.auth_service.config.TokenConfig;
-import com.carldev.auth_service.dto.request.AuthLoginRequestDTO;
-import com.carldev.auth_service.dto.request.AuthRegisterRequestDTO;
-import com.carldev.auth_service.dto.request.ForgotPassword;
-import com.carldev.auth_service.dto.request.ResetPasswordDTO;
+import com.carldev.auth_service.dto.request.*;
 import com.carldev.auth_service.dto.response.AuthLoginResponseDTO;
 import com.carldev.auth_service.dto.response.AuthRegisterResponseDTO;
 import com.carldev.auth_service.dto.response.AuthResponseDTO;
@@ -16,7 +13,6 @@ import com.carldev.auth_service.mapper.AuthRegisterMapper;
 import com.carldev.auth_service.model.ResetToken;
 import com.carldev.auth_service.model.UserAuth;
 import com.carldev.auth_service.model.VerificationToken;
-import com.carldev.auth_service.repository.AddressRepository;
 import com.carldev.auth_service.repository.AuthRepository;
 import com.carldev.auth_service.repository.ResetTokenRepository;
 import com.carldev.auth_service.repository.TokenVerificationRepository;
@@ -47,7 +43,6 @@ import java.util.stream.Collectors;
 public class UserAuthService {
 
     private final AuthRepository authRepository;
-    private final AddressRepository addressRepository;
     private final TokenConfig tokenConfig;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
@@ -57,7 +52,7 @@ public class UserAuthService {
     private final ResetTokenRepository resetTokenRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public UserAuthService(AuthRepository authRepository, AddressRepository addressRepository,
+    public UserAuthService(AuthRepository authRepository,
                            TokenConfig tokenConfig,
                            AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder,
                            AuthRegisterMapper authRegisterMapper, AuthMapper authMapper,
@@ -65,7 +60,6 @@ public class UserAuthService {
                            ResetTokenRepository resetTokenRepository,
                            ApplicationEventPublisher applicationEventPublisher) {
         this.authRepository = authRepository;
-        this.addressRepository = addressRepository;
         this.tokenConfig = tokenConfig;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
@@ -231,6 +225,7 @@ public class UserAuthService {
         return authMapper.toDto(user);
     }
 
+
     public Page<AuthResponseDTO> getAllUsers(int pageNumber) {
 
         int page = pageNumber - 1;
@@ -243,6 +238,25 @@ public class UserAuthService {
         return users.map(authMapper::toDto);
     }
 
+    public AuthResponseDTO changeProfilePicture(PictureProfileRequestDTO requestDTO, UUID id) {
+
+        UserAuth user = authRepository.findById(id).orElseThrow(
+                () -> new HandleIfUserNotExistsException("Usuário não encontrado")
+        );
+
+        user.setProfilePicture(requestDTO.profilePicture());
+        authRepository.save(user);
+
+        return authMapper.toDto(user);
+    }
+
+    public AuthResponseDTO getUserById(UUID id) {
+        UserAuth userAuth = authRepository.findById(id).orElseThrow(
+                () -> new HandleIfUserNotExistsException("Usuário não encontrado")
+        );
+
+        return authMapper.toDto(userAuth);
+    }
 
 
 }
