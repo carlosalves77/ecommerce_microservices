@@ -4,12 +4,15 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
+import java.sql.SQLType;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Setter
 @Getter
@@ -61,6 +64,19 @@ public class Product {
     @OneToOne(mappedBy = "product",
     cascade = CascadeType.ALL, optional = false)
     private Inventory inventory;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private Map<String, Object> specifications = new HashMap<>();
+
+    public void setInventory(Inventory inventory) {
+        if (inventory == null) {
+            this.inventory.setProduct(null);
+        } else {
+            inventory.setProduct(this);
+        }
+        this.inventory = inventory;
+    }
 
 }
 
