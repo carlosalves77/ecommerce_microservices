@@ -42,7 +42,8 @@ public class SecurityConfig {
                                                 "/api/v1/product/payment/debit"
                                         ).permitAll()
                                         .requestMatchers(HttpMethod.GET, "/api/v1/product/all",
-                                                "/api/v1/product/search"
+                                                "/api/v1/product/search",
+                                                "/api/v1/product/find/**"
                                         )
                                         .permitAll()
 
