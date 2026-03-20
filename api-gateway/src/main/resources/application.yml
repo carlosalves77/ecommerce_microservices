@@ -41,7 +41,7 @@ spring:
             - id: product-public-read-routes
               uri: http://product-catalog-service:4004
               predicates:
-                - Path=/api/v1/product/**
+                - Path=/api/v1/product/**, /api/v1/categories/all
                 - Method=GET
 
             - id: product-private-write-routes

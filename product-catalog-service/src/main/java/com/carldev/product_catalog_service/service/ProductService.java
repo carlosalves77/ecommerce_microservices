@@ -167,6 +167,18 @@ public class ProductService {
     }
 
     @Transactional
+    public List<ProductResponseDTO> getProductByCategory(String slug, int pageNumber) {
+
+        int pages = pageNumber - 1;
+
+        Pageable pageable = PageRequest.of(pages, 10);
+
+        List<Product> products = productRepository.findAllByCategoriesSlug(slug, pageable);
+
+        return products.stream().map(productMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Transactional
     public ProductResponseDTO getProductById(Long id) {
 
         Product product = productRepository.findById(id).orElseThrow(

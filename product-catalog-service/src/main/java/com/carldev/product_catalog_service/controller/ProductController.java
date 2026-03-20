@@ -100,6 +100,7 @@ public class ProductController {
         return ResponseEntity.ok().body(productResponseDTO);
     }
 
+
     @GetMapping("/find/{id}")
     public ResponseEntity<ProductResponseDTO> getProductById(@PathVariable("id") Long id) {
 
@@ -107,6 +108,17 @@ public class ProductController {
         ProductResponseDTO product = productService.getProductById(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(product);
+    }
+
+    @GetMapping("/find")
+    public ResponseEntity<List<ProductResponseDTO>> getProductByCategory(
+            @RequestParam("page") int page,
+            @RequestParam("slug") String slug
+    ) {
+
+        List<ProductResponseDTO> getProductByCategory = productService.getProductByCategory(slug, page);
+
+        return ResponseEntity.status(HttpStatus.OK).body(getProductByCategory);
     }
 
     @DeleteMapping()
