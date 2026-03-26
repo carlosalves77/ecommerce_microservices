@@ -3,6 +3,7 @@ package com.carldev.payment_service.service;
 import com.carldev.payment_service.dto.request.ItemDTO;
 import com.carldev.payment_service.dto.request.OrderConsumeEvent;
 import com.carldev.payment_service.dto.response.GetPaymentsResponseDTO;
+import com.carldev.payment_service.dto.response.OrderItemResponseDTO;
 import com.carldev.payment_service.entity.Payment;
 import com.carldev.payment_service.entity.PaymentItem;
 import com.carldev.payment_service.kafka.producer.PaymentSuccessEvent;
@@ -109,7 +110,7 @@ public class PaymentConsumerService {
     }
 
 
-    @Transactional()
+    @Transactional
     public Page<GetPaymentsResponseDTO> getPayment(int pageNumber) {
 
         int pageOne = pageNumber - 1;
@@ -122,7 +123,7 @@ public class PaymentConsumerService {
     }
 
     @Transactional
-    public void handlePayment(UUID paymentId, String customerId) {
+    public List<OrderItemResponseDTO> handlePayment(UUID paymentId, String customerId) throws JsonProcessingException {
 
         Payment payment = paymentRepository.findById(paymentId).orElseThrow(
                 () -> new RuntimeException("Pagamento não encontrado")
@@ -132,6 +133,8 @@ public class PaymentConsumerService {
             throw new RuntimeException("Pagamento já foi aprovado");
         }
 
+
+        PaymentIntent paymentIntent = null;
         try {
             BigDecimal totalValue = payment.getAmount().multiply(new BigDecimal("100"));
 
@@ -165,7 +168,7 @@ public class PaymentConsumerService {
                                     .build())
                     .build();
 
-            PaymentIntent paymentIntent = PaymentIntent.create(params);
+             paymentIntent = PaymentIntent.create(params);
 
 
             PaymentMethodListParams listParams = PaymentMethodListParams.builder()
@@ -193,6 +196,15 @@ public class PaymentConsumerService {
             log.error("Erro ao criar pagamento no Stripe", e);
         }
 
+
+        assert paymentIntent != null;
+        String paymentResult =  paymentIntent.getMetadata().get("items");
+
+      List<OrderItemResponseDTO> listItems =  objectMapper.readValue(paymentResult,
+                new TypeReference<List<OrderItemResponseDTO>>() {
+         });
+
+      return listItems;
     }
 
     public void deleteById(String id) {
@@ -249,8 +261,6 @@ public class PaymentConsumerService {
         Payment payment = paymentRepository.findById(paymentId).orElseThrow(
                 () -> new RuntimeException("Pagamento não encontrado: " + paymentId)
         );
-
-        log.info("Qual o tipo de evento {}", event.getType());
 
         switch (event.getType()) {
             case "payment_intent.succeeded":
