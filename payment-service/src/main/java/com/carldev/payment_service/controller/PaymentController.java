@@ -1,7 +1,9 @@
 package com.carldev.payment_service.controller;
 
 import com.carldev.payment_service.dto.response.GetPaymentsResponseDTO;
+import com.carldev.payment_service.dto.response.OrderItemResponseDTO;
 import com.carldev.payment_service.service.PaymentConsumerService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.stripe.exception.StripeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -54,14 +56,15 @@ public class PaymentController {
     }
 
     @PostMapping("{id}/{customerId}")
-    public ResponseEntity<String> handlePayment(
+    public ResponseEntity<List<OrderItemResponseDTO>> handlePayment(
             @PathVariable("id") UUID id,
             @PathVariable("customerId") String customerId
 
-    ) {
-        paymentConsumerService.handlePayment(id, customerId);
+    ) throws JsonProcessingException {
 
-        return ResponseEntity.status(HttpStatus.OK).body("Pagamento concluido");
+      List<OrderItemResponseDTO> payment =  paymentConsumerService.handlePayment(id, customerId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(payment);
     }
 
     @DeleteMapping
