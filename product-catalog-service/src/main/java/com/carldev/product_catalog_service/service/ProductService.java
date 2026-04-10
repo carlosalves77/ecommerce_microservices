@@ -14,6 +14,7 @@ import com.carldev.product_catalog_service.repository.CategoryRepository;
 import com.carldev.product_catalog_service.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -155,6 +156,7 @@ public class ProductService {
 
 
     @Transactional
+    @Cacheable(value = "all_product", key = "#pageNumber")
     public Page<ProductResponseDTO> getAllProductList(int pageNumber) {
 
         int pages = pageNumber - 1;
